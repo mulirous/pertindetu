@@ -1,19 +1,19 @@
 package com.pertindetu.dev.models;
 
 import java.time.Instant;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pertindetu.dev.models.enums.UserType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -33,11 +33,8 @@ public class User {
   @Column(nullable = false)
   private String password;
 
+  @Column(name = "cellphone_number")
   private String cellphoneNumber;
-
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private UserType type;
 
   @Column(nullable = false, updatable = false)
   private Instant dateCreation;
@@ -49,34 +46,138 @@ public class User {
   @JoinColumn(name = "address_id", referencedColumnName = "id")
   @JsonIgnore
   private Address address;
-  
-  public User(){}
 
-  public Long getId() { return id; }
-  public void setId(Long id) { this.id = id; }
+  @Column(columnDefinition = "TEXT")
+  private String bio;
 
-  public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+  private boolean verified;
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+  @Column(name = "pix_key")
+  private String pixKey;
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+  @Column(name = "profile_photo_url")
+  private String profilePhotoUrl;
 
-    public String getCellphoneNumber() { return cellphoneNumber; }
-    public void setCellphoneNumber(String cellphoneNumber) { this.cellphoneNumber = cellphoneNumber; }
+  @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JsonIgnore
+  private List<Order> clientOrders;
 
-    public UserType getType() { return type; }
-    public void setType(UserType type) { this.type = type; }
+  @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JsonIgnore
+  private List<Order> providerOrders;
 
-    public Instant getDateCreation() { return dateCreation; }
-    public void setDateCreation(Instant dateCreation) { this.dateCreation = dateCreation; }
+  public User() {
+  }
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+  public Long getId() {
+    return id;
+  }
 
-    public Address getAddress() { return address; }
-    public void setAddress(Address address) { this.address = address; }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public String getCellphoneNumber() {
+    return cellphoneNumber;
+  }
+
+  public void setCellphoneNumber(String cellphoneNumber) {
+    this.cellphoneNumber = cellphoneNumber;
+  }
+
+  public Instant getDateCreation() {
+    return dateCreation;
+  }
+
+  public void setDateCreation(Instant dateCreation) {
+    this.dateCreation = dateCreation;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
+  public Address getAddress() {
+    return address;
+  }
+
+  public void setAddress(Address address) {
+    this.address = address;
+  }
+
+  public String getBio() {
+    return bio;
+  }
+
+  public void setBio(String bio) {
+    this.bio = bio;
+  }
+
+  public boolean isVerified() {
+    return verified;
+  }
+
+  public void setVerified(boolean verified) {
+    this.verified = verified;
+  }
+
+  public String getPixKey() {
+    return pixKey;
+  }
+
+  public void setPixKey(String pixKey) {
+    this.pixKey = pixKey;
+  }
+
+  public String getProfilePhotoUrl() {
+    return profilePhotoUrl;
+  }
+
+  public void setProfilePhotoUrl(String profilePhotoUrl) {
+    this.profilePhotoUrl = profilePhotoUrl;
+  }
+
+  public List<Order> getClientOrders() {
+    return clientOrders;
+  }
+
+  public void setClientOrders(List<Order> clientOrders) {
+    this.clientOrders = clientOrders;
+  }
+
+  public List<Order> getProviderOrders() {
+    return providerOrders;
+  }
+
+  public void setProviderOrders(List<Order> providerOrders) {
+    this.providerOrders = providerOrders;
+  }
 }

@@ -38,17 +38,15 @@ public class UserController {
   private UserService userService;
 
   @Operation(summary = "List all users")
-  @ApiResponse(responseCode = "200", description = "List of users successfully retrieved",
-               content = @Content(mediaType = "application/json",
-               schema = @Schema(implementation = ApiResponseDTO.class)))
+  @ApiResponse(responseCode = "200", description = "List of users successfully retrieved", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponseDTO.class)))
   @GetMapping
-    public ResponseEntity<ApiResponseDTO<List<UserResponseDTO>>> getAll() {
-        List<UserResponseDTO> users = userService.findAll()
-                .stream()
-                .map(UserResponseDTO::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(new ApiResponseDTO<>(true, users, null));
-    }
+  public ResponseEntity<ApiResponseDTO<List<UserResponseDTO>>> getAll() {
+    List<UserResponseDTO> users = userService.findAll()
+        .stream()
+        .map(UserResponseDTO::new)
+        .collect(Collectors.toList());
+    return ResponseEntity.ok(new ApiResponseDTO<>(true, users, null));
+  }
 
   @Operation(summary = "Get a user by ID")
   @ApiResponses(value = {
@@ -57,57 +55,43 @@ public class UserController {
   })
   @GetMapping("/{id}")
   public ResponseEntity<ApiResponseDTO<UserResponseDTO>> getById(@PathVariable Long id) {
-      User user = userService.findById(id);
-      return ResponseEntity.ok(new ApiResponseDTO<>(true, new UserResponseDTO(user), null));
+    User user = userService.findById(id);
+    return ResponseEntity.ok(new ApiResponseDTO<>(true, new UserResponseDTO(user), null));
   }
 
   @Operation(summary = "Create a new user")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "User created successfully",
-                   content = @Content(mediaType = "application/json",
-                   schema = @Schema(implementation = ApiResponseDTO.class))),
-      @ApiResponse(responseCode = "400", description = "Invalid user data provided (validation error)",
-                   content = @Content(mediaType = "application/json",
-                   schema = @Schema(implementation = ApiResponseDTO.class)))
+      @ApiResponse(responseCode = "201", description = "User created successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponseDTO.class))),
+      @ApiResponse(responseCode = "400", description = "Invalid user data provided (validation error)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponseDTO.class)))
   })
   @PostMapping
   public ResponseEntity<ApiResponseDTO<UserResponseDTO>> create(@Valid @RequestBody UserRequestDTO dto) {
-      User created = userService.save(dto);
-      return ResponseEntity.status(HttpStatus.CREATED)
-              .body(new ApiResponseDTO<>(true, new UserResponseDTO(created), null));
+    User created = userService.save(dto);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(new ApiResponseDTO<>(true, new UserResponseDTO(created), null));
   }
 
   @Operation(summary = "Update an existing user")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "User updated successfully",
-                   content = @Content(mediaType = "application/json",
-                   schema = @Schema(implementation = ApiResponseDTO.class))),
-      @ApiResponse(responseCode = "404", description = "User not found",
-                   content = @Content(mediaType = "application/json",
-                   schema = @Schema(implementation = ApiResponseDTO.class))),
-      @ApiResponse(responseCode = "400", description = "Invalid user data provided",
-                   content = @Content(mediaType = "application/json",
-                   schema = @Schema(implementation = ApiResponseDTO.class)))
+      @ApiResponse(responseCode = "200", description = "User updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponseDTO.class))),
+      @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponseDTO.class))),
+      @ApiResponse(responseCode = "400", description = "Invalid user data provided", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponseDTO.class)))
   })
   @PutMapping("/{id}")
   public ResponseEntity<ApiResponseDTO<UserResponseDTO>> update(@PathVariable Long id,
-                                                                @Valid @RequestBody UserRequestDTO dto) {
-      User updated = userService.update(id, dto);
-      return ResponseEntity.ok(new ApiResponseDTO<>(true, new UserResponseDTO(updated), null));
+      @Valid @RequestBody UserRequestDTO dto) {
+    User updated = userService.update(id, dto);
+    return ResponseEntity.ok(new ApiResponseDTO<>(true, new UserResponseDTO(updated), null));
   }
 
   @Operation(summary = "Delete a user by ID")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "User deleted successfully",
-                   content = @Content(mediaType = "application/json",
-                   schema = @Schema(implementation = ApiResponseDTO.class))),
-      @ApiResponse(responseCode = "404", description = "User not found",
-                   content = @Content(mediaType = "application/json",
-                   schema = @Schema(implementation = ApiResponseDTO.class)))
+      @ApiResponse(responseCode = "200", description = "User deleted successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponseDTO.class))),
+      @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponseDTO.class)))
   })
   @DeleteMapping("/{id}")
   public ResponseEntity<ApiResponseDTO<UserResponseDTO>> delete(@PathVariable Long id) {
-        User deleted = userService.deleteById(id);
-        return ResponseEntity.ok(new ApiResponseDTO<>(true, new UserResponseDTO(deleted), null));
-    }
+    User deleted = userService.deleteById(id);
+    return ResponseEntity.ok(new ApiResponseDTO<>(true, new UserResponseDTO(deleted), null));
+  }
 }

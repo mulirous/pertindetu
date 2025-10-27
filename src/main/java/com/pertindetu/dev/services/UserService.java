@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.pertindetu.dev.exceptions.ResourceNotFoundException;
 import com.pertindetu.dev.models.User;
 import com.pertindetu.dev.models.dtos.UserRequestDTO;
-import com.pertindetu.dev.models.enums.UserType;
 import com.pertindetu.dev.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -18,55 +17,60 @@ import jakarta.transaction.Transactional;
 @Service
 public class UserService {
 
-    @Autowired
-    private  UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    
-    public List<User> findAll() {
-        return userRepository.findAll();
+  private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+  public List<User> findAll() {
+    return userRepository.findAll();
+  }
+
+  public User findById(Long id) {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("User with ID " + id + " not found"));
+  }
+
+  @Transactional
+  public User save(UserRequestDTO dto) {
+    User user = new User();
+    user.setName(dto.name());
+    user.setEmail(dto.email());
+    user.setPassword(passwordEncoder.encode(dto.password()));
+    user.setCellphoneNumber(dto.cellphoneNumber());
+    user.setActive(true);
+    user.setDateCreation(Instant.now());
+    user.setBio(dto.bio());
+    user.setVerified(dto.verified());
+    user.setPixKey(dto.pixKey());
+    user.setProfilePhotoUrl(dto.profilePhotoUrl());
+    return userRepository.save(user);
+  }
+
+  @Transactional
+  public User update(Long id, UserRequestDTO dto) {
+    User existing = findById(id);
+    existing.setName(dto.name());
+    existing.setEmail(dto.email());
+
+    if (dto.password() != null && !dto.password().isEmpty()) {
+      existing.setPassword(passwordEncoder.encode(dto.password()));
     }
 
-    public User findById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User with ID " + id + " not found"));
-    }
+    existing.setCellphoneNumber(dto.cellphoneNumber());
+    existing.setBio(dto.bio());
+    existing.setVerified(dto.verified());
+    existing.setPixKey(dto.pixKey());
+    existing.setProfilePhotoUrl(dto.profilePhotoUrl());
 
-    @Transactional
-    public User save(UserRequestDTO dto) {
-        User user = new User();
-        user.setName(dto.name());
-        user.setEmail(dto.email());
-        user.setPassword(passwordEncoder.encode(dto.password()));
-        user.setCellphoneNumber(dto.cellphoneNumber());
-        user.setType(UserType.valueOf(dto.type().toUpperCase()));
-        user.setActive(true);
-        user.setDateCreation(Instant.now());
-        return userRepository.save(user);
-    }
-    
-    @Transactional
-    public User update(Long id, UserRequestDTO dto) {
-        User existing = findById(id);
-        existing.setName(dto.name());
-        existing.setEmail(dto.email());
-        if (dto.password() != null && !dto.password().isEmpty()) {
-            existing.setPassword(passwordEncoder.encode(dto.password()));
-        }
-        existing.setCellphoneNumber(dto.cellphoneNumber());
-        existing.setType(UserType.fromString(dto.type()));
-        return userRepository.save(existing);
-    }
+    return userRepository.save(existing);
+  }
 
-    @Transactional
-    public User deleteById(Long id) {
-      User userToDelete = findById(id);
+  @Transactional
+  public User deleteById(Long id) {
+    User userToDelete = findById(id);
 
-      if (userToDelete == null) {
-          throw new ResourceNotFoundException("User with ID " + id + " not found");
-      }
-        
-      userRepository.delete(userToDelete);
-      return userToDelete;
-    }
+    userRepository.delete(userToDelete);
+    return userToDelete;
+  }
 }

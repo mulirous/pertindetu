@@ -1,10 +1,10 @@
-  package com.pertindetu.dev.models.dtos;
+package com.pertindetu.dev.models.dtos;
 
-  import java.math.BigDecimal;
+import java.math.BigDecimal;
 
-  import jakarta.validation.constraints.NotBlank;
-  import jakarta.validation.constraints.NotNull;
-  import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * DTO for creating/updating Address.
@@ -12,27 +12,20 @@
  */
 public record AddressRequestDTO(
 
-    @NotBlank(message = "Street is required")
-    String street,
+    @NotBlank(message = "Street is required") String street,
 
-    @NotNull(message = "Number is required")
-    Long number,
+    @NotNull(message = "Number is required") Long number,
 
-    @NotBlank(message = "Neighborhood is required")
-    String neighborhood,
+    @NotBlank(message = "Neighborhood is required") String neighborhood,
 
-    @NotBlank(message = "City is required")
-    String city,
+    @NotBlank(message = "City is required") String city,
 
-    @NotBlank(message = "Federative unit (state) is required")
-    @Size(min = 2, max = 2, message = "Federative unit must have 2 characters")
-    String federativeUnit,
+    @NotBlank(message = "Federative unit (state) is required") @Size(min = 2, max = 2, message = "Federative unit must have 2 characters") String federativeUnit,
 
-    @NotBlank(message = "Postal code (CEP) is required")
-    @Size(min = 8, max = 8, message = "Postal code (CEP) must have 8 characters")
-    String postalCode,
+    @NotBlank(message = "Postal code (CEP) is required") @Size(min = 8, max = 8, message = "Postal code (CEP) must have 8 characters") String postalCode,
 
     BigDecimal latitude,
     BigDecimal longitude
 
-) {}
+) {
+}
