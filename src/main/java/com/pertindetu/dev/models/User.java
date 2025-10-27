@@ -2,6 +2,7 @@ package com.pertindetu.dev.models;
 
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pertindetu.dev.models.enums.UserType;
 
 import jakarta.persistence.CascadeType;
@@ -46,6 +47,7 @@ public class User {
 
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "address_id", referencedColumnName = "id")
+  @JsonIgnore
   private Address address;
   
   public User(){}
