@@ -17,7 +17,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+@ToString
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -42,108 +54,10 @@ public class Order {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "provider_id", nullable = false)
-  private User provider;
+  private ProviderProfile provider;
 
   private Long serviceId;
   private Long paymentId;
   private Long evaluationId;
 
-  public Order() {
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public OrderStatus getStatus() {
-    return status;
-  }
-
-  public void setStatus(OrderStatus status) {
-    this.status = status;
-  }
-
-  public String getDetails() {
-    return details;
-  }
-
-  public void setDetails(String details) {
-    this.details = details;
-  }
-
-  public Long getQuantity() {
-    return quantity;
-  }
-
-  public void setQuantity(Long quantity) {
-    this.quantity = quantity;
-  }
-
-  public BigDecimal getValue() {
-    return value;
-  }
-
-  public void setValue(BigDecimal value) {
-    this.value = value;
-  }
-
-  public Date getEventDate() {
-    return eventDate;
-  }
-
-  public void setEventDate(Date eventDate) {
-    this.eventDate = eventDate;
-  }
-
-  public Timestamp getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(Timestamp createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public User getClient() {
-    return client;
-  }
-
-  public void setClient(User client) {
-    this.client = client;
-  }
-
-  public User getProvider() {
-    return provider;
-  }
-
-  public void setProvider(User provider) {
-    this.provider = provider;
-  }
-
-  public Long getServiceId() {
-    return serviceId;
-  }
-
-  public void setServiceId(Long serviceId) {
-    this.serviceId = serviceId;
-  }
-
-  public Long getPaymentId() {
-    return paymentId;
-  }
-
-  public void setPaymentId(Long paymentId) {
-    this.paymentId = paymentId;
-  }
-
-  public Long getEvaluationId() {
-    return evaluationId;
-  }
-
-  public void setEvaluationId(Long evaluationId) {
-    this.evaluationId = evaluationId;
-  }
 }

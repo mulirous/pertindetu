@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 import com.pertindetu.dev.models.Order;
+import com.pertindetu.dev.models.ProviderProfile;
 import com.pertindetu.dev.models.User;
 import com.pertindetu.dev.models.enums.OrderStatus;
 
@@ -17,7 +18,7 @@ public record OrderResponseDTO(
     Date eventDate,
     Timestamp createdAt,
     User client,
-    User provider,
+    ProviderProfile provider,
     Long serviceId,
     Long paymentId,
     Long evaluationId) {

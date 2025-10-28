@@ -40,10 +40,6 @@ public class UserService {
     user.setCellphoneNumber(dto.cellphoneNumber());
     user.setActive(true);
     user.setDateCreation(Instant.now());
-    user.setBio(dto.bio());
-    user.setVerified(dto.verified());
-    user.setPixKey(dto.pixKey());
-    user.setProfilePhotoUrl(dto.profilePhotoUrl());
     return userRepository.save(user);
   }
 
@@ -56,12 +52,7 @@ public class UserService {
     if (dto.password() != null && !dto.password().isEmpty()) {
       existing.setPassword(passwordEncoder.encode(dto.password()));
     }
-
     existing.setCellphoneNumber(dto.cellphoneNumber());
-    existing.setBio(dto.bio());
-    existing.setVerified(dto.verified());
-    existing.setPixKey(dto.pixKey());
-    existing.setProfilePhotoUrl(dto.profilePhotoUrl());
 
     return userRepository.save(existing);
   }

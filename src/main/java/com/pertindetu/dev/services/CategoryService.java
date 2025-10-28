@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.pertindetu.dev.exceptions.ResourceNotFoundException;
 import com.pertindetu.dev.models.Category;
-import com.pertindetu.dev.models.User;
 import com.pertindetu.dev.models.dtos.CategoryRequestDTO;
 import com.pertindetu.dev.repositories.CategoryRepository;
-import com.pertindetu.dev.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -19,9 +17,6 @@ public class CategoryService {
 
   @Autowired
   private CategoryRepository categoryRepository;
-
-  @Autowired
-  private UserRepository userRepository;
 
   public List<Category> findAll() {
     return categoryRepository.findAll();
@@ -34,13 +29,9 @@ public class CategoryService {
 
   @Transactional
   public Category save(CategoryRequestDTO dto) {
-    User user = userRepository.findById(dto.userId())
-        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
     Category category = new Category();
     category.setName(dto.name());
     category.setDescription(dto.description());
-    category.setUser(user);
 
     return categoryRepository.save(category);
   }

@@ -10,11 +10,7 @@ public record UserResponseDTO(
     String email,
     String cellphoneNumber,
     Instant dateCreation,
-    boolean active,
-    String bio,
-    boolean verified,
-    String pixKey,
-    String profilePhotoUrl) {
+    boolean active) {
   public UserResponseDTO(User user) {
     this(
         user.getId(),
@@ -22,10 +18,6 @@ public record UserResponseDTO(
         user.getEmail(),
         user.getCellphoneNumber(),
         user.getDateCreation(),
-        user.isActive(),
-        user.getBio(),
-        user.isVerified(),
-        user.getPixKey(),
-        user.getProfilePhotoUrl());
+        user.isActive());
   }
 }

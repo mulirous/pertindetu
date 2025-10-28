@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service;
 
 import com.pertindetu.dev.exceptions.ResourceNotFoundException;
 import com.pertindetu.dev.models.Order;
+import com.pertindetu.dev.models.ProviderProfile;
+import com.pertindetu.dev.models.User;
 import com.pertindetu.dev.models.dtos.OrderRequestDTO;
 import com.pertindetu.dev.models.enums.OrderStatus;
 import com.pertindetu.dev.repositories.OrderRepository;
+import com.pertindetu.dev.repositories.ProviderProfileRepository;
 import com.pertindetu.dev.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -24,6 +27,9 @@ public class OrderService {
   @Autowired
   private UserRepository userRepository;
 
+  @Autowired
+  private ProviderProfileRepository providerProfileRepository;
+
   public List<Order> findAll() {
     return orderRepository.findAll();
   }
@@ -36,6 +42,13 @@ public class OrderService {
   @Transactional
   public Order save(OrderRequestDTO dto) {
     Order order = new Order();
+
+    User client = userRepository.findById(dto.clientId())
+        .orElseThrow(() -> new ResourceNotFoundException("Client (User) not found with ID " + dto.clientId()));
+
+    ProviderProfile provider = providerProfileRepository.findById(dto.providerId())
+        .orElseThrow(() -> new ResourceNotFoundException("Provider Profile not found with ID " + dto.providerId()));
+
     order.setStatus(OrderStatus.valueOf(dto.status().toUpperCase()));
     order.setDetails(dto.details());
     order.setQuantity(dto.quantity());
@@ -46,8 +59,9 @@ public class OrderService {
     order.setClient(userRepository.findById(dto.clientId())
         .orElseThrow(() -> new ResourceNotFoundException("Client not found")));
 
-    order.setProvider(userRepository.findById(dto.providerId())
-        .orElseThrow(() -> new ResourceNotFoundException("Provider not found")));
+    order.setClient(client);
+    order.setProvider(provider);
+
     order.setServiceId(dto.serviceId());
     return orderRepository.save(order);
   }
@@ -55,6 +69,13 @@ public class OrderService {
   @Transactional
   public Order update(Long id, OrderRequestDTO dto) {
     Order existing = findById(id);
+
+    User client = userRepository.findById(dto.clientId())
+        .orElseThrow(() -> new ResourceNotFoundException("Client (User) not found with ID " + dto.clientId()));
+
+    ProviderProfile provider = providerProfileRepository.findById(dto.providerId())
+        .orElseThrow(() -> new ResourceNotFoundException("Provider Profile not found with ID " + dto.providerId()));
+
     existing.setStatus(OrderStatus.valueOf(dto.status().toUpperCase()));
     existing.setDetails(dto.details());
     existing.setQuantity(dto.quantity());
@@ -62,10 +83,11 @@ public class OrderService {
     existing.setEventDate(dto.eventDate());
     existing.setClient(userRepository.findById(dto.clientId())
         .orElseThrow(() -> new ResourceNotFoundException("Client not found")));
-    existing.setProvider(userRepository.findById(dto.providerId())
-        .orElseThrow(() -> new ResourceNotFoundException("Provider not found")));
+    existing.setClient(client);
+    existing.setProvider(provider);
+
     existing.setServiceId(dto.serviceId());
-    existing.setServiceId(dto.serviceId());
+
     return orderRepository.save(existing);
   }
 

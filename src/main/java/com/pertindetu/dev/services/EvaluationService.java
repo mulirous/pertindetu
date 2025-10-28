@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 
 import com.pertindetu.dev.exceptions.ResourceNotFoundException;
 import com.pertindetu.dev.models.Evaluation;
+import com.pertindetu.dev.models.ProviderProfile;
 import com.pertindetu.dev.models.dtos.EvaluationRequestDTO;
 import com.pertindetu.dev.repositories.EvaluationRepository;
+import com.pertindetu.dev.repositories.ProviderProfileRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -18,6 +20,9 @@ public class EvaluationService {
 
   @Autowired
   private EvaluationRepository evaluationRepository;
+
+  @Autowired
+  private ProviderProfileRepository providerProfileRepository;
 
   public List<Evaluation> findAll() {
     return evaluationRepository.findAll();
@@ -30,24 +35,35 @@ public class EvaluationService {
 
   @Transactional
   public Evaluation save(EvaluationRequestDTO dto) {
+    ProviderProfile provider = providerProfileRepository.findById(dto.providerProfileId())
+        .orElseThrow(
+            () -> new ResourceNotFoundException("Provider Profile not found with ID " + dto.providerProfileId()));
+
     Evaluation evaluation = new Evaluation();
     evaluation.setScore(dto.score());
     evaluation.setComment(dto.comment());
     evaluation.setCreatedAt(new Timestamp(System.currentTimeMillis()));
     evaluation.setOrderId(dto.orderId());
     evaluation.setClientId(dto.clientId());
-    evaluation.setProviderProfileId(dto.providerProfileId());
+    evaluation.setProvider(provider);
+
     return evaluationRepository.save(evaluation);
   }
 
   @Transactional
   public Evaluation update(Long id, EvaluationRequestDTO dto) {
     Evaluation existing = findById(id);
+
+    ProviderProfile provider = providerProfileRepository.findById(dto.providerProfileId())
+        .orElseThrow(
+            () -> new ResourceNotFoundException("Provider Profile not found with ID " + dto.providerProfileId()));
+
     existing.setScore(dto.score());
     existing.setComment(dto.comment());
     existing.setOrderId(dto.orderId());
     existing.setClientId(dto.clientId());
-    existing.setProviderProfileId(dto.providerProfileId());
+    existing.setProvider(provider);
+
     return evaluationRepository.save(existing);
   }
 

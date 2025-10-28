@@ -20,6 +20,6 @@ public record EvaluationResponseDTO(
         evaluation.getCreatedAt(),
         evaluation.getOrderId(),
         evaluation.getClientId(),
-        evaluation.getProviderProfileId());
+        evaluation.getProvider().getId());
   }
 }

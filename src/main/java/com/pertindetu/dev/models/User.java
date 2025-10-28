@@ -16,7 +16,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+@ToString
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @Entity
 @Table(name = "users")
 public class User {
@@ -47,137 +59,7 @@ public class User {
   @JsonIgnore
   private Address address;
 
-  @Column(columnDefinition = "TEXT")
-  private String bio;
-
-  private boolean verified;
-
-  @Column(name = "pix_key")
-  private String pixKey;
-
-  @Column(name = "profile_photo_url")
-  private String profilePhotoUrl;
-
   @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JsonIgnore
-  private List<Order> clientOrders;
-
-  @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JsonIgnore
-  private List<Order> providerOrders;
-
-  public User() {
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public String getCellphoneNumber() {
-    return cellphoneNumber;
-  }
-
-  public void setCellphoneNumber(String cellphoneNumber) {
-    this.cellphoneNumber = cellphoneNumber;
-  }
-
-  public Instant getDateCreation() {
-    return dateCreation;
-  }
-
-  public void setDateCreation(Instant dateCreation) {
-    this.dateCreation = dateCreation;
-  }
-
-  public boolean isActive() {
-    return active;
-  }
-
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public Address getAddress() {
-    return address;
-  }
-
-  public void setAddress(Address address) {
-    this.address = address;
-  }
-
-  public String getBio() {
-    return bio;
-  }
-
-  public void setBio(String bio) {
-    this.bio = bio;
-  }
-
-  public boolean isVerified() {
-    return verified;
-  }
-
-  public void setVerified(boolean verified) {
-    this.verified = verified;
-  }
-
-  public String getPixKey() {
-    return pixKey;
-  }
-
-  public void setPixKey(String pixKey) {
-    this.pixKey = pixKey;
-  }
-
-  public String getProfilePhotoUrl() {
-    return profilePhotoUrl;
-  }
-
-  public void setProfilePhotoUrl(String profilePhotoUrl) {
-    this.profilePhotoUrl = profilePhotoUrl;
-  }
-
-  public List<Order> getClientOrders() {
-    return clientOrders;
-  }
-
-  public void setClientOrders(List<Order> clientOrders) {
-    this.clientOrders = clientOrders;
-  }
-
-  public List<Order> getProviderOrders() {
-    return providerOrders;
-  }
-
-  public void setProviderOrders(List<Order> providerOrders) {
-    this.providerOrders = providerOrders;
-  }
+  private List<Order> orders;
 }

@@ -4,11 +4,26 @@ import java.sql.Timestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+@ToString
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @Entity
 @Table(name = "evaluations")
 public class Evaluation {
@@ -30,65 +45,8 @@ public class Evaluation {
   @Column(nullable = false)
   private Long clientId;
 
-  @Column(nullable = false)
-  private Long providerProfileId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "provider_id", nullable = false)
+  private ProviderProfile provider;
 
-  public Evaluation() {
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public Long getScore() {
-    return score;
-  }
-
-  public void setScore(Long score) {
-    this.score = score;
-  }
-
-  public String getComment() {
-    return comment;
-  }
-
-  public void setComment(String comment) {
-    this.comment = comment;
-  }
-
-  public Timestamp getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(Timestamp createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public Long getOrderId() {
-    return orderId;
-  }
-
-  public void setOrderId(Long orderId) {
-    this.orderId = orderId;
-  }
-
-  public Long getClientId() {
-    return clientId;
-  }
-
-  public void setClientId(Long clientId) {
-    this.clientId = clientId;
-  }
-
-  public Long getProviderProfileId() {
-    return providerProfileId;
-  }
-
-  public void setProviderProfileId(Long providerProfileId) {
-    this.providerProfileId = providerProfileId;
-  }
 }
