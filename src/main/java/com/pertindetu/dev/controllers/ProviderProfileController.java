@@ -1,8 +1,9 @@
 package com.pertindetu.dev.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pertindetu.dev.models.ProviderProfile;
+import com.pertindetu.dev.models.dtos.ApiResponseDTO;
 import com.pertindetu.dev.models.dtos.ProviderProfileRequestDTO;
 import com.pertindetu.dev.models.dtos.ProviderProfileResponseDTO;
 import com.pertindetu.dev.services.ProviderProfileService;
@@ -34,11 +36,14 @@ public class ProviderProfileController {
 
   @Operation(summary = "List all provider profiles")
   @GetMapping
-  public ResponseEntity<List<ProviderProfileResponseDTO>> findAll() {
-    List<ProviderProfileResponseDTO> list = providerProfileService.findAll().stream()
-        .map(ProviderProfileResponseDTO::new)
-        .toList();
-    return ResponseEntity.ok(list);
+  public ResponseEntity<ApiResponseDTO<Page<ProviderProfileResponseDTO>>> findAll(
+      @PageableDefault(page = 0, size = 10, sort = "user.name") Pageable pageable) {
+
+    Page<ProviderProfile> page = providerProfileService.findAll(pageable);
+
+    Page<ProviderProfileResponseDTO> mappedPage = page.map(ProviderProfileResponseDTO::new);
+
+    return ResponseEntity.ok(new ApiResponseDTO<>(true, mappedPage, null));
   }
 
   @Operation(summary = "Get a provider profile by ID")

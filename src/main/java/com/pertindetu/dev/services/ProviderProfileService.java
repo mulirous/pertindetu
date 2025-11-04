@@ -3,6 +3,8 @@ package com.pertindetu.dev.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.pertindetu.dev.exceptions.ResourceNotFoundException;
@@ -28,8 +30,8 @@ public class ProviderProfileService {
   @Autowired
   private CategoryRepository categoryRepository;
 
-  public List<ProviderProfile> findAll() {
-    return providerProfileRepository.findAll();
+  public Page<ProviderProfile> findAll(Pageable pageable) {
+    return providerProfileRepository.findAll(pageable);
   }
 
   public ProviderProfile findById(Long id) {

@@ -1,7 +1,6 @@
 package com.pertindetu.dev.services;
 
 import java.time.Instant;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,6 +10,9 @@ import com.pertindetu.dev.exceptions.ResourceNotFoundException;
 import com.pertindetu.dev.models.User;
 import com.pertindetu.dev.models.dtos.UserRequestDTO;
 import com.pertindetu.dev.repositories.UserRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import jakarta.transaction.Transactional;
 
@@ -22,8 +24,8 @@ public class UserService {
 
   private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-  public List<User> findAll() {
-    return userRepository.findAll();
+  public Page<User> findAll(Pageable pageable) {
+    return userRepository.findAll(pageable);
   }
 
   public User findById(Long id) {

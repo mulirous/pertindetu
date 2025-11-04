@@ -1,8 +1,8 @@
 package com.pertindetu.dev.services;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.pertindetu.dev.exceptions.ResourceNotFoundException;
 import com.pertindetu.dev.models.Category;
@@ -27,8 +27,8 @@ public class ServiceService {
   @Autowired
   private CategoryRepository categoryRepository;
 
-  public List<Service> findAll() {
-    return serviceRepository.findAll();
+  public Page<Service> findAll(Pageable pageable) {
+    return serviceRepository.findAll(pageable);
   }
 
   public Service findById(Long id) {

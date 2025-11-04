@@ -1,9 +1,10 @@
 package com.pertindetu.dev.services;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.pertindetu.dev.exceptions.ResourceNotFoundException;
@@ -30,8 +31,8 @@ public class OrderService {
   @Autowired
   private ProviderProfileRepository providerProfileRepository;
 
-  public List<Order> findAll() {
-    return orderRepository.findAll();
+  public Page<Order> findAll(Pageable pageable) {
+    return orderRepository.findAll(pageable);
   }
 
   public Order findById(Long id) {

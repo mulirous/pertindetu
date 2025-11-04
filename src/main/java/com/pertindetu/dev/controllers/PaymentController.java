@@ -1,8 +1,9 @@
 package com.pertindetu.dev.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,9 +41,12 @@ public class PaymentController {
   @Operation(summary = "List all payments")
   @ApiResponse(responseCode = "200", description = "List of payments successfully retrieved", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponseDTO.class)))
   @GetMapping
-  public ResponseEntity<ApiResponseDTO<List<PaymentResponseDTO>>> findAll() {
-    List<PaymentResponseDTO> list = paymentService.findAll().stream().map(PaymentResponseDTO::new).toList();
-    return ResponseEntity.ok(new ApiResponseDTO<>(true, list, null));
+  public ResponseEntity<ApiResponseDTO<Page<PaymentResponseDTO>>> findAll(
+      @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+
+    Page<PaymentResponseDTO> page = paymentService.findAll(pageable).map(PaymentResponseDTO::new);
+
+    return ResponseEntity.ok(new ApiResponseDTO<>(true, page, null));
   }
 
   @Operation(summary = "Get a payment by ID")
