@@ -1,9 +1,9 @@
 package com.pertindetu.dev.controllers;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,11 +40,12 @@ public class UserController {
   @Operation(summary = "List all users")
   @ApiResponse(responseCode = "200", description = "List of users successfully retrieved", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponseDTO.class)))
   @GetMapping
-  public ResponseEntity<ApiResponseDTO<List<UserResponseDTO>>> getAll() {
-    List<UserResponseDTO> users = userService.findAll()
-        .stream()
-        .map(UserResponseDTO::new)
-        .collect(Collectors.toList());
+  public ResponseEntity<ApiResponseDTO<Page<UserResponseDTO>>> getAll(
+      @PageableDefault(page = 0, size = 10, sort = "name") Pageable pageable) {
+
+    Page<UserResponseDTO> users = userService.findAll(pageable)
+        .map(UserResponseDTO::new);
+
     return ResponseEntity.ok(new ApiResponseDTO<>(true, users, null));
   }
 

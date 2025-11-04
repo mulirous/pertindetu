@@ -1,8 +1,9 @@
 package com.pertindetu.dev.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,10 +37,14 @@ public class ServiceController {
   @Operation(summary = "List all services")
   @ApiResponse(responseCode = "200", description = "List of services successfully retrieved", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServiceResponseDTO.class)))
   @GetMapping
-  public ResponseEntity<List<ServiceResponseDTO>> findAll() {
-    List<ServiceResponseDTO> list = serviceService.findAll().stream()
-        .map(ServiceResponseDTO::new).toList();
-    return ResponseEntity.ok(list);
+  public ResponseEntity<Page<ServiceResponseDTO>> findAll(
+      @PageableDefault(page = 0, size = 10, sort = "title") Pageable pageable) {
+
+    Page<Service> servicePage = serviceService.findAll(pageable);
+
+    Page<ServiceResponseDTO> dtoPage = servicePage.map(ServiceResponseDTO::new);
+
+    return ResponseEntity.ok(dtoPage);
   }
 
   @Operation(summary = "Get a service by ID")

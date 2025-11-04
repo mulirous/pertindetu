@@ -1,8 +1,9 @@
 package com.pertindetu.dev.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,9 +41,12 @@ public class EvaluationController {
   @Operation(summary = "List all evaluations")
   @ApiResponse(responseCode = "200", description = "List of evaluations successfully retrieved", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponseDTO.class)))
   @GetMapping
-  public ResponseEntity<ApiResponseDTO<List<EvaluationResponseDTO>>> findAll() {
-    List<EvaluationResponseDTO> list = evaluationService.findAll().stream().map(EvaluationResponseDTO::new).toList();
-    return ResponseEntity.ok(new ApiResponseDTO<>(true, list, null));
+  public ResponseEntity<ApiResponseDTO<Page<EvaluationResponseDTO>>> findAll(
+      @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+
+    Page<EvaluationResponseDTO> page = evaluationService.findAll(pageable).map(EvaluationResponseDTO::new);
+
+    return ResponseEntity.ok(new ApiResponseDTO<>(true, page, null));
   }
 
   @Operation(summary = "Get an evaluation by ID")
