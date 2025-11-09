@@ -1,5 +1,4 @@
 import { Star } from "lucide-react"
-import Image from "next/image"
 
 interface ProfileHeaderProps {
   storeName: string
@@ -20,11 +19,9 @@ export default function ProfileHeader({ storeName, ownerName, rating, reviews, t
         {/* Profile Image */}
         <div className="flex-shrink-0">
           <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-            <Image
+            <img
               src={imageUrl || "/placeholder.svg"}
               alt={storeName}
-              width={80}
-              height={80}
               className="w-full h-full object-cover"
             />
           </div>
