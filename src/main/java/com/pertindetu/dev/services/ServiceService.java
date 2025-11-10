@@ -1,5 +1,7 @@
 package com.pertindetu.dev.services;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,9 +33,27 @@ public class ServiceService {
     return serviceRepository.findAll(pageable);
   }
 
+  public Page<Service> findByFilters(
+      Long categoryId, 
+      Long providerId, 
+      BigDecimal minPrice, 
+      BigDecimal maxPrice, 
+      String search, 
+      Pageable pageable) {
+    return serviceRepository.findByFilters(categoryId, providerId, minPrice, maxPrice, search, pageable);
+  }
+
   public Service findById(Long id) {
     return serviceRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+  }
+
+  public Service findByIdWithDetails(Long id) {
+    Service service = serviceRepository.findByIdWithDetails(id);
+    if (service == null) {
+      throw new ResourceNotFoundException("Service not found");
+    }
+    return service;
   }
 
   @Transactional

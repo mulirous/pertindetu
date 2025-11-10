@@ -1,5 +1,7 @@
 package com.pertindetu.dev.controllers;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +47,25 @@ public class ServiceController {
 
   @Autowired
   private ImageUploadService imageUploadService;
+
+  @Operation(summary = "List services with filters (public endpoint)")
+  @ApiResponse(responseCode = "200", description = "Filtered services retrieved successfully")
+  @GetMapping("/public")
+  public ResponseEntity<Page<ServiceResponseDTO>> findByFilters(
+      @RequestParam(required = false) Long categoryId,
+      @RequestParam(required = false) Long providerId,
+      @RequestParam(required = false) BigDecimal minPrice,
+      @RequestParam(required = false) BigDecimal maxPrice,
+      @RequestParam(required = false) String search,
+      @PageableDefault(page = 0, size = 12, sort = "createdAt,desc") Pageable pageable) {
+
+    Page<Service> servicePage = serviceService.findByFilters(
+        categoryId, providerId, minPrice, maxPrice, search, pageable);
+
+    Page<ServiceResponseDTO> dtoPage = servicePage.map(ServiceResponseDTO::new);
+
+    return ResponseEntity.ok(dtoPage);
+  }
 
   @Operation(summary = "List all services")
   @ApiResponse(responseCode = "200", description = "List of services successfully retrieved", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServiceResponseDTO.class)))

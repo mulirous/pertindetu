@@ -221,8 +221,40 @@ export interface ServiceCreateData {
   categoryId: number;
 }
 
+export interface ServicesPageData {
+  content: ServiceData[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+export interface ServiceFilters {
+  categoryId?: number;
+  providerId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  search?: string;
+}
+
 // Services API
 export const servicesApi = {
+  // Buscar serviços públicos com filtros
+  getPublic: async (filters: ServiceFilters = {}, page = 0, size = 12) => {
+    const params: any = { page, size, sort: "createdAt,desc" };
+
+    if (filters.categoryId) params.categoryId = filters.categoryId;
+    if (filters.providerId) params.providerId = filters.providerId;
+    if (filters.minPrice) params.minPrice = filters.minPrice;
+    if (filters.maxPrice) params.maxPrice = filters.maxPrice;
+    if (filters.search) params.search = filters.search;
+
+    const response = await api.get<ServicesPageData>("/services/public", {
+      params,
+    });
+    return response.data;
+  },
+
   getAll: async () => {
     const response = await api.get<ApiResponse<{ content: ServiceData[] }>>(
       "/services"
