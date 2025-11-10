@@ -1,11 +1,35 @@
-import { Heart, Search, ShoppingCart, User } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Heart, Search, ShoppingCart, User, LogOut } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
-  const { isLoggedIn } = useAuth();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { isLoggedIn, user, logout } = useAuth();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  // Fechar menu ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    if (showUserMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showUserMenu]);
+
+  const redirectToLogin = () => {
+    navigate("/login");
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
@@ -40,13 +64,69 @@ export default function Header() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-4">
-            <Link
-              to={isLoggedIn ? "/providers/new" : "/login"}
-              title={isLoggedIn ? "Seja um Prestador" : "Fazer Login"}
-              className="p-2 hover:bg-secondary rounded-full transition-colors"
-            >
-              <User className="w-5 h-5 text-foreground" />
-            </Link>
+            {isLoggedIn && (
+              <div className="hover:bg-secondary rounded-full px-2 py-1 transition-colors">
+                Olá, {user?.name}!
+              </div>
+            )}
+
+            {/* User Menu */}
+            <div className="relative" ref={menuRef}>
+              {isLoggedIn ? (
+                <div>
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="p-2 hover:bg-secondary rounded-full transition-colors"
+                    title="Meu Perfil"
+                  >
+                    <User className="w-5 h-5 text-foreground" />
+                  </button>
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-56 bg-background border border-border rounded-lg shadow-lg py-1 z-50">
+                      <div className="px-4 py-2 border-b border-border">
+                        <p className="text-sm font-semibold">{user?.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {user?.email}
+                        </p>
+                      </div>
+                      <Link
+                        to="/profile"
+                        onClick={() => setShowUserMenu(false)}
+                        className="block px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                      >
+                        Meu Perfil
+                      </Link>
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setShowUserMenu(false)}
+                        className="block px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                      >
+                        Dashboard
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          logout();
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors flex items-center gap-2 text-red-600"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sair
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => redirectToLogin()}
+                  className="p-2 hover:bg-secondary rounded-full transition-colors"
+                  title="Meu Perfil"
+                >
+                  <User className="w-5 h-5 text-foreground" />
+                </button>
+              )}
+            </div>
 
             <button className="p-2 hover:bg-secondary rounded-full transition-colors">
               <Heart className="w-5 h-5 text-foreground" />
