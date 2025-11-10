@@ -31,3 +31,19 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# === Node.js / Vite (Frontend) ===
+# Ignora a pasta de dependências do frontend
+/frontend/node_modules/
+
+# Ignora a pasta de build (distribuição) do frontend
+/frontend/dist/
+
+# Ignora arquivos de ambiente local do frontend
+/frontend/.env.local
+/frontend/.env.*.local
+
+# Ignora logs de erro do NPM
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
