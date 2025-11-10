@@ -1,5 +1,10 @@
 package com.pertindetu.dev.models.enums;
 
 public enum OrderStatus {
-  CREATED, PAID, ACCEPTED, IN_PROGRESS, COMPLETED, CANCELED
+  PENDING,      // Aguardando resposta do provider
+  ACCEPTED,     // Provider aceitou
+  REJECTED,     // Provider rejeitou
+  IN_PROGRESS,  // Serviço em andamento
+  COMPLETED,    // Serviço concluído
+  CANCELLED     // Cancelado pelo cliente
 }
