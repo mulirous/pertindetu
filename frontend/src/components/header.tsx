@@ -1,11 +1,11 @@
 import { Heart, Search, ShoppingCart, User } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const { isLoggedIn } = useAuth()
+  const [searchQuery, setSearchQuery] = useState("");
+  const { isLoggedIn } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
@@ -18,7 +18,9 @@ export default function Header() {
               <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
                 <Heart className="w-5 h-5 text-white fill-white" />
               </div>
-              <span className="font-bold text-lg text-foreground">PERTINDETU</span>
+              <span className="font-bold text-lg text-foreground">
+                PERTINDETU
+              </span>
             </Link>
           </div>
 
@@ -68,5 +70,5 @@ export default function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }
