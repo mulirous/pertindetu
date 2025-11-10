@@ -42,7 +42,7 @@ public class ServiceMedia {
   @Column(columnDefinition = "TEXT")
   private String shortDescription;
 
-  @Column(nullable = false)
+  @Column(name = "display_order", nullable = false)
   private Long order;
 
   @ManyToOne

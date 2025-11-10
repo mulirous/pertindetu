@@ -1,6 +1,7 @@
 package com.pertindetu.dev.models;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -47,6 +48,12 @@ public class Service {
 
   @Column
   private BigDecimal avgDuration;
+
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private Instant createdAt;
+
+  @Column(name = "updated_at")
+  private Instant updatedAt;
 
   @ManyToOne
   @JoinColumn(name = "provider_id", nullable = false)

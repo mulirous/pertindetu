@@ -101,9 +101,7 @@ public class ProviderProfileService {
   }
 
   public long countVerifiedProviders() {
-    return providerProfileRepository.findAll().stream()
-        .filter(ProviderProfile::isVerified)
-        .count();
+    return providerProfileRepository.countByVerifiedTrue();
   }
 
   public ProviderProfile findByUserId(Long userId) {

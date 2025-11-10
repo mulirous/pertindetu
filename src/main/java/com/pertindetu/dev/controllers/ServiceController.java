@@ -1,6 +1,7 @@
 package com.pertindetu.dev.controllers;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -57,10 +58,10 @@ public class ServiceController {
       @RequestParam(required = false) BigDecimal minPrice,
       @RequestParam(required = false) BigDecimal maxPrice,
       @RequestParam(required = false) String search,
-      @PageableDefault(page = 0, size = 12, sort = "createdAt,desc") Pageable pageable) {
+      @PageableDefault(page = 0, size = 12, sort = "updatedAt,desc") Pageable pageable) {
 
     Page<Service> servicePage = serviceService.findByFilters(
-        categoryId, providerId, minPrice, maxPrice, search, pageable);
+        categoryId, providerId, minPrice, maxPrice, (search == null ? null : new String(search.getBytes(StandardCharsets.UTF_8)).toLowerCase()), pageable);
 
     Page<ServiceResponseDTO> dtoPage = servicePage.map(ServiceResponseDTO::new);
 

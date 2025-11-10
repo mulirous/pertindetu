@@ -94,8 +94,6 @@ public class UserService {
   }
 
   public long countActiveUsers() {
-    return userRepository.findAll().stream()
-        .filter(User::isActive)
-        .count();
+    return userRepository.countByActiveTrue();
   }
 }

@@ -1,4 +1,11 @@
-import { Heart, Search, ShoppingCart, User, LogOut } from "lucide-react";
+import {
+  Heart,
+  Search,
+  ShoppingCart,
+  User,
+  LogOut,
+  Shield,
+} from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -6,7 +13,7 @@ import { useAuth } from "../context/AuthContext";
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const { isLoggedIn, user, logout } = useAuth();
+  const { isLoggedIn, user, logout, isAdmin } = useAuth();
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -104,6 +111,16 @@ export default function Header() {
                       >
                         Dashboard
                       </Link>
+                      {isAdmin && (
+                        <Link
+                          to="/admin"
+                          onClick={() => setShowUserMenu(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors text-orange-600 font-semibold"
+                        >
+                          <Shield className="w-4 h-4" />
+                          Painel Admin
+                        </Link>
+                      )}
                       <button
                         onClick={() => {
                           setShowUserMenu(false);

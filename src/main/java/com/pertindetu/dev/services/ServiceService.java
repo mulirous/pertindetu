@@ -72,6 +72,7 @@ public class ServiceService {
     service.setAvgDuration(dto.avgDuration());
     service.setProvider(provider);
     service.setCategory(category);
+    service.setUpdatedAt(java.time.Instant.now());
 
     return serviceRepository.save(service);
   }
@@ -94,6 +95,7 @@ public class ServiceService {
 
     existing.setProvider(provider);
     existing.setCategory(category);
+    existing.setUpdatedAt(java.time.Instant.now());
 
     return serviceRepository.save(existing);
   }
@@ -117,8 +119,6 @@ public class ServiceService {
   }
 
   public long countActiveServices() {
-    return serviceRepository.findAll().stream()
-        .filter(Service::isActive)
-        .count();
+    return serviceRepository.countByActiveTrue();
   }
 }
