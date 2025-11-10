@@ -37,6 +37,9 @@ public class ServiceMedia {
   private MediaType type;
 
   @Column(columnDefinition = "TEXT")
+  private String mediaUrl;
+
+  @Column(columnDefinition = "TEXT")
   private String shortDescription;
 
   @Column(nullable = false)
