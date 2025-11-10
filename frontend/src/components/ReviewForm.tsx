@@ -121,8 +121,8 @@ export function ReviewForm({
             {isSubmitting
               ? "Enviando..."
               : isEditing
-                ? "Atualizar Avaliação"
-                : "Enviar Avaliação"}
+              ? "Atualizar Avaliação"
+              : "Enviar Avaliação"}
           </Button>
         </div>
       </form>

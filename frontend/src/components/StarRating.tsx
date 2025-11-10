@@ -43,16 +43,18 @@ export function StarRating({
             type="button"
             onClick={() => handleClick(index)}
             disabled={!editable}
-            className={`${editable ? "cursor-pointer hover:scale-110" : "cursor-default"
-              } transition-transform`}
+            className={`${
+              editable ? "cursor-pointer hover:scale-110" : "cursor-default"
+            } transition-transform`}
           >
             <Star
-              className={`${iconSize} ${isFilled
-                ? "fill-yellow-400 text-yellow-400"
-                : isHalf
+              className={`${iconSize} ${
+                isFilled
+                  ? "fill-yellow-400 text-yellow-400"
+                  : isHalf
                   ? "fill-yellow-200 text-yellow-400"
                   : "text-gray-300"
-                }`}
+              }`}
             />
           </button>
         );

@@ -53,8 +53,11 @@ export function ReviewCard({
 
           {showService && (
             <p className="text-sm text-muted-foreground mt-2">
-              Serviço: <span className="font-medium">{review.service.title}</span>
-              <span className="text-xs ml-2">({review.service.categoryName})</span>
+              Serviço:{" "}
+              <span className="font-medium">{review.service.title}</span>
+              <span className="text-xs ml-2">
+                ({review.service.categoryName})
+              </span>
             </p>
           )}
         </div>
@@ -62,11 +65,7 @@ export function ReviewCard({
         {(canEdit || canDelete) && (
           <div className="flex gap-2">
             {canEdit && onEdit && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onEdit(review)}
-              >
+              <Button variant="ghost" size="sm" onClick={() => onEdit(review)}>
                 <Edit className="w-4 h-4" />
               </Button>
             )}

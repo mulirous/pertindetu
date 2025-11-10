@@ -563,7 +563,9 @@ export const reviewsApi = {
 
   // Obter total de reviews de um serviço
   getCountByServiceId: async (serviceId: number) => {
-    const response = await api.get<number>(`/reviews/service/${serviceId}/count`);
+    const response = await api.get<number>(
+      `/reviews/service/${serviceId}/count`
+    );
     return response.data;
   },
 
