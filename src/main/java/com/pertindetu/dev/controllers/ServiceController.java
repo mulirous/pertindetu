@@ -12,11 +12,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.pertindetu.dev.models.Service;
+import com.pertindetu.dev.models.ServiceMedia;
 import com.pertindetu.dev.models.dtos.ServiceRequestDTO;
 import com.pertindetu.dev.models.dtos.ServiceResponseDTO;
+import com.pertindetu.dev.models.enums.MediaType;
+import com.pertindetu.dev.services.ImageUploadService;
+import com.pertindetu.dev.services.ServiceMediaService;
 import com.pertindetu.dev.services.ServiceService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +39,12 @@ public class ServiceController {
 
   @Autowired
   private ServiceService serviceService;
+
+  @Autowired
+  private ServiceMediaService serviceMediaService;
+
+  @Autowired
+  private ImageUploadService imageUploadService;
 
   @Operation(summary = "List all services")
   @ApiResponse(responseCode = "200", description = "List of services successfully retrieved", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServiceResponseDTO.class)))
@@ -86,5 +98,43 @@ public class ServiceController {
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     serviceService.delete(id);
     return ResponseEntity.noContent().build();
+  }
+
+  @Operation(summary = "Upload image for a service")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Image uploaded successfully"),
+      @ApiResponse(responseCode = "404", description = "Service not found"),
+      @ApiResponse(responseCode = "400", description = "Invalid file")
+  })
+  @PostMapping("/{id}/media")
+  public ResponseEntity<ServiceMedia> uploadMedia(
+      @PathVariable Long id,
+      @RequestParam("image") MultipartFile image,
+      @RequestParam(value = "description", required = false) String description) {
+    
+    // Verificar se o serviço existe
+    serviceService.findById(id);
+    
+    // Fazer upload da imagem
+    String mediaUrl = imageUploadService.uploadImage(image);
+    
+    // Criar ServiceMedia
+    ServiceMedia media = serviceMediaService.save(
+        id,
+        mediaUrl,
+        MediaType.PHOTO,
+        description,
+        null // order será calculado automaticamente
+    );
+    
+    return ResponseEntity.ok(media);
+  }
+
+  @Operation(summary = "Get all media for a service")
+  @ApiResponse(responseCode = "200", description = "Media list retrieved successfully")
+  @GetMapping("/{id}/media")
+  public ResponseEntity<java.util.List<ServiceMedia>> getServiceMedia(@PathVariable Long id) {
+    java.util.List<ServiceMedia> mediaList = serviceMediaService.findByServiceId(id);
+    return ResponseEntity.ok(mediaList);
   }
 }
