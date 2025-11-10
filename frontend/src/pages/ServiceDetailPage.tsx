@@ -1,10 +1,20 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { servicesApi, type ServiceData } from "../api";
+import {
+  servicesApi,
+  reviewsApi,
+  ordersApi,
+  type ServiceData,
+  type ReviewsPageData,
+  type OrderData,
+} from "../api";
 import { useAuth } from "../context/AuthContext";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { OrderForm } from "../components/OrderForm";
+import { StarRating } from "../components/StarRating";
+import { ReviewsList } from "../components/ReviewsList";
+import { ReviewForm } from "../components/ReviewForm";
 import { formatCurrency } from "../utils/orderHelpers";
 import {
   Clock,
@@ -14,6 +24,7 @@ import {
   Image as ImageIcon,
   CheckCircle,
   Loader2,
+  MessageSquare,
 } from "lucide-react";
 
 export function ServiceDetailPage() {
@@ -26,11 +37,27 @@ export function ServiceDetailPage() {
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
 
+  // Reviews states
+  const [reviews, setReviews] = useState<ReviewsPageData | null>(null);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [averageRating, setAverageRating] = useState<number>(0);
+  const [reviewCount, setReviewCount] = useState<number>(0);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [canReview, setCanReview] = useState(false);
+  const [userCompletedOrderId, setUserCompletedOrderId] = useState<
+    number | null
+  >(null);
+
   useEffect(() => {
     if (id) {
       loadService();
+      loadReviews();
+      loadReviewStats();
+      if (user) {
+        checkCanReview();
+      }
     }
-  }, [id]);
+  }, [id, user]);
 
   const loadService = async () => {
     if (!id) return;
@@ -46,6 +73,69 @@ export function ServiceDetailPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const loadReviews = async (page = 0) => {
+    if (!id) return;
+
+    setReviewsLoading(true);
+    try {
+      const data = await reviewsApi.getByServiceId(Number(id), page, 5);
+      setReviews(data);
+    } catch (error) {
+      console.error("Erro ao carregar reviews:", error);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  const loadReviewStats = async () => {
+    if (!id) return;
+
+    try {
+      const [average, count] = await Promise.all([
+        reviewsApi.getAverageByServiceId(Number(id)),
+        reviewsApi.getCountByServiceId(Number(id)),
+      ]);
+      setAverageRating(average);
+      setReviewCount(count);
+    } catch (error) {
+      console.error("Erro ao carregar estatísticas de reviews:", error);
+    }
+  };
+
+  const checkCanReview = async () => {
+    if (!id || !user) return;
+
+    try {
+      // Buscar pedidos COMPLETED do usuário para este serviço
+      const userOrders = await ordersApi.getByClientId(user.id, 0, 100);
+      const completedOrder = userOrders.content.find(
+        (order: OrderData) =>
+          order.service.id === Number(id) && order.status === "COMPLETED"
+      );
+
+      if (completedOrder) {
+        // Verificar se já existe review
+        const userReviews = await reviewsApi.getByUserId(user.id, 0, 100);
+        const hasReview = userReviews.content.some(
+          (review) => review.orderId === completedOrder.id
+        );
+
+        setCanReview(!hasReview);
+        setUserCompletedOrderId(completedOrder.id);
+      }
+    } catch (error) {
+      console.error("Erro ao verificar se pode avaliar:", error);
+    }
+  };
+
+  const handleReviewSuccess = () => {
+    setShowReviewForm(false);
+    setCanReview(false);
+    loadReviews(0);
+    loadReviewStats();
+    alert("Avaliação enviada com sucesso!");
   };
 
   const handleViewProvider = () => {
@@ -202,6 +292,67 @@ export function ServiceDetailPage() {
                 Ver Perfil
               </Button>
             </div>
+          </Card>
+
+          {/* Seção de Avaliações */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="font-semibold text-xl flex items-center gap-2 mb-2">
+                  <MessageSquare className="w-5 h-5" />
+                  Avaliações
+                </h3>
+                {reviewCount > 0 && (
+                  <div className="flex items-center gap-3">
+                    <StarRating rating={averageRating} size="lg" showNumber />
+                    <span className="text-sm text-muted-foreground">
+                      {reviewCount}{" "}
+                      {reviewCount === 1 ? "avaliação" : "avaliações"}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {canReview && !showReviewForm && (
+                <Button onClick={() => setShowReviewForm(true)}>
+                  Avaliar Serviço
+                </Button>
+              )}
+            </div>
+
+            {/* Formulário de Review */}
+            {showReviewForm && userCompletedOrderId && user && (
+              <div className="mb-6">
+                <ReviewForm
+                  orderId={userCompletedOrderId}
+                  userId={user.id}
+                  serviceId={Number(id)}
+                  serviceName={service.title}
+                  onSuccess={handleReviewSuccess}
+                  onCancel={() => setShowReviewForm(false)}
+                />
+              </div>
+            )}
+
+            {/* Lista de Reviews */}
+            {reviews && (
+              <ReviewsList
+                reviews={reviews}
+                isLoading={reviewsLoading}
+                showService={false}
+                showUser={true}
+                canEdit={false}
+                canDelete={false}
+                onPageChange={(page) => loadReviews(page)}
+              />
+            )}
+
+            {!reviewsLoading && reviewCount === 0 && (
+              <p className="text-center text-muted-foreground py-8">
+                Este serviço ainda não possui avaliações.
+                {canReview && " Seja o primeiro a avaliar!"}
+              </p>
+            )}
           </Card>
         </div>
 

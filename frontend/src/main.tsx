@@ -17,6 +17,8 @@ import { ProviderOrdersPage } from "./pages/ProviderOrdersPage";
 import { ServicesPage } from "./pages/ServicesPage";
 import { ServiceDetailPage } from "./pages/ServiceDetailPage";
 import { PublicProviderPage } from "./pages/PublicProviderPage";
+import { MyReviewsPage } from "./pages/MyReviewsPage";
+import { ProviderReviewsPage } from "./pages/ProviderReviewsPage";
 
 const router = createBrowserRouter([
   {
@@ -70,6 +72,14 @@ const router = createBrowserRouter([
       {
         path: "/provider/orders",
         element: <ProviderOrdersPage />,
+      },
+      {
+        path: "/my-reviews",
+        element: <MyReviewsPage />,
+      },
+      {
+        path: "/provider/reviews",
+        element: <ProviderReviewsPage />,
       },
     ],
   },
