@@ -4,6 +4,7 @@ import { Clock, MapPin } from "lucide-react"
 import { useState } from "react"
 import Footer from "../components/footer"
 import Header from "../components/header"
+import { OrderForm } from "../components/OrderForm"
 import ProfileHeader from "../components/profile-header"
 import ProfileTabs from "../components/profile-tabs"
 import SidebarCard from "../components/sidebar-card"
@@ -47,6 +48,11 @@ export default function ProfilePage() {
                   </div>
                 }
               />
+              <OrderForm 
+                    serviceId={1}
+                    providerId={1}
+                    basePrice={50.00}
+                />
 
               <SidebarCard
                 title="Localização"

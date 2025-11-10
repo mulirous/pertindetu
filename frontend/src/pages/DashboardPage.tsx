@@ -2,6 +2,7 @@ import { AnnouncementsCarousel } from "../components/announcements-carousel"
 import { DashboardSidebar } from "../components/dashboard-sidebar"
 import Header from "../components/header"
 import { ReviewsList } from "../components/reviews-list"
+import { ServiceForm } from "../components/ServiceForm"
 
 export default function DashboardPage() {
   return (
@@ -17,6 +18,7 @@ export default function DashboardPage() {
 
           {/* Conteúdo - Direita */}
           <div className="lg:col-span-3 space-y-6">
+            <ServiceForm />
             <ReviewsList />
             <AnnouncementsCarousel />
           </div>

@@ -1,8 +1,11 @@
-import { Heart, Search, ShoppingCart, User } from "lucide-react"
-import { useState } from "react"
+import { Heart, Search, ShoppingCart, User } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
-export function Header() {
+export default function Header() {
   const [searchQuery, setSearchQuery] = useState("")
+  const { isLoggedIn } = useAuth()
 
   return (
     <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
@@ -10,10 +13,13 @@ export function Header() {
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
-              <Heart className="w-5 h-5 text-white fill-white" />
-            </div>
-            <span className="font-bold text-lg text-foreground">PERTINDETU</span>
+            {/* Link para a Homepage no Logo */}
+            <Link to="/" className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                <Heart className="w-5 h-5 text-white fill-white" />
+              </div>
+              <span className="font-bold text-lg text-foreground">PERTINDETU</span>
+            </Link>
           </div>
 
           {/* Search Bar */}
@@ -32,9 +38,14 @@ export function Header() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-4">
-            <button className="p-2 hover:bg-secondary rounded-full transition-colors">
+            <Link
+              to={isLoggedIn ? "/providers/new" : "/login"}
+              title={isLoggedIn ? "Seja um Prestador" : "Fazer Login"}
+              className="p-2 hover:bg-secondary rounded-full transition-colors"
+            >
               <User className="w-5 h-5 text-foreground" />
-            </button>
+            </Link>
+
             <button className="p-2 hover:bg-secondary rounded-full transition-colors">
               <Heart className="w-5 h-5 text-foreground" />
             </button>
@@ -59,5 +70,3 @@ export function Header() {
     </header>
   )
 }
-
-export default Header
