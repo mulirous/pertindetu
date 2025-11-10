@@ -19,6 +19,7 @@ import { ServiceDetailPage } from "./pages/ServiceDetailPage";
 import { PublicProviderPage } from "./pages/PublicProviderPage";
 import { MyReviewsPage } from "./pages/MyReviewsPage";
 import { ProviderReviewsPage } from "./pages/ProviderReviewsPage";
+import { AdminDashboardPage } from "./pages/AdminDashboardPage";
 
 const router = createBrowserRouter([
   {
@@ -80,6 +81,10 @@ const router = createBrowserRouter([
       {
         path: "/provider/reviews",
         element: <ProviderReviewsPage />,
+      },
+      {
+        path: "/admin",
+        element: <AdminDashboardPage />,
       },
     ],
   },

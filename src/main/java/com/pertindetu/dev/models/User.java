@@ -54,6 +54,9 @@ public class User {
   @Column(nullable = false)
   private boolean active;
 
+  @Column(nullable = false)
+  private boolean isAdmin = false;
+
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "address_id", referencedColumnName = "id")
   @JsonIgnore

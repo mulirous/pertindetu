@@ -43,6 +43,7 @@ export interface UserData {
   cellphoneNumber: string;
   dateCreation: string;
   active: boolean;
+  isAdmin: boolean;
 }
 
 export interface ApiResponse<T> {
@@ -61,6 +62,11 @@ export interface UserUpdateData {
 // Provider interfaces
 export interface CategoryData {
   id: number;
+  name: string;
+  description: string;
+}
+
+export interface CategoryRequestData {
   name: string;
   description: string;
 }
@@ -586,5 +592,180 @@ export const reviewsApi = {
     await api.delete(`/reviews/${id}`, {
       params: { userId },
     });
+  },
+};
+
+// ============================================
+// ADMIN API
+// ============================================
+
+export interface AdminStats {
+  totalUsers: number;
+  activeUsers: number;
+  totalProviders: number;
+  verifiedProviders: number;
+  totalServices: number;
+  activeServices: number;
+  totalOrders: number;
+  pendingOrders: number;
+  completedOrders: number;
+}
+
+export const adminApi = {
+  // Dashboard Stats
+  getDashboardStats: async () => {
+    const response = await api.get<AdminStats>("/admin/stats/dashboard");
+    return response.data;
+  },
+
+  // Users Management
+  users: {
+    getAll: async (
+      page = 0,
+      size = 10,
+      sortBy = "dateCreation",
+      direction = "DESC"
+    ) => {
+      const response = await api.get("/admin/users", {
+        params: { page, size, sortBy, direction },
+      });
+      return response.data;
+    },
+
+    getById: async (id: number) => {
+      const response = await api.get<UserData>(`/admin/users/${id}`);
+      return response.data;
+    },
+
+    toggleStatus: async (id: number) => {
+      const response = await api.patch<UserData>(
+        `/admin/users/${id}/toggle-status`
+      );
+      return response.data;
+    },
+
+    delete: async (id: number) => {
+      await api.delete(`/admin/users/${id}`);
+    },
+
+    getStats: async () => {
+      const total = await api.get<number>("/admin/users/stats/total");
+      const active = await api.get<number>("/admin/users/stats/active");
+      return { total: total.data, active: active.data };
+    },
+  },
+
+  // Providers Management
+  providers: {
+    getAll: async (page = 0, size = 10, sortBy = "id", direction = "ASC") => {
+      const response = await api.get("/admin/providers", {
+        params: { page, size, sortBy, direction },
+      });
+      return response.data;
+    },
+
+    getById: async (id: number) => {
+      const response = await api.get<ProviderProfileData>(
+        `/admin/providers/${id}`
+      );
+      return response.data;
+    },
+
+    toggleVerification: async (id: number) => {
+      const response = await api.patch<ProviderProfileData>(
+        `/admin/providers/${id}/toggle-verification`
+      );
+      return response.data;
+    },
+
+    delete: async (id: number) => {
+      await api.delete(`/admin/providers/${id}`);
+    },
+
+    getStats: async () => {
+      const total = await api.get<number>("/admin/providers/stats/total");
+      const verified = await api.get<number>("/admin/providers/stats/verified");
+      return { total: total.data, verified: verified.data };
+    },
+  },
+
+  // Services Management
+  services: {
+    getAll: async (page = 0, size = 10, sortBy = "id", direction = "DESC") => {
+      const response = await api.get("/admin/services", {
+        params: { page, size, sortBy, direction },
+      });
+      return response.data;
+    },
+
+    getById: async (id: number) => {
+      const response = await api.get<ServiceData>(`/admin/services/${id}`);
+      return response.data;
+    },
+
+    toggleStatus: async (id: number) => {
+      const response = await api.patch<ServiceData>(
+        `/admin/services/${id}/toggle-status`
+      );
+      return response.data;
+    },
+
+    delete: async (id: number) => {
+      await api.delete(`/admin/services/${id}`);
+    },
+
+    getStats: async () => {
+      const total = await api.get<number>("/admin/services/stats/total");
+      const active = await api.get<number>("/admin/services/stats/active");
+      return { total: total.data, active: active.data };
+    },
+  },
+
+  // Orders Stats
+  orders: {
+    getStats: async () => {
+      const response = await api.get("/admin/stats/orders");
+      return response.data;
+    },
+  },
+
+  // Categories Management
+  categories: {
+    getAll: async (page = 0, size = 10, sortBy = "name", direction = "ASC") => {
+      const response = await api.get("/admin/categories", {
+        params: { page, size, sortBy, direction },
+      });
+      return response.data;
+    },
+
+    getById: async (id: number) => {
+      const response = await api.get<CategoryData>(`/admin/categories/${id}`);
+      return response.data;
+    },
+
+    create: async (categoryData: CategoryRequestData) => {
+      const response = await api.post<CategoryData>(
+        "/admin/categories",
+        categoryData
+      );
+      return response.data;
+    },
+
+    update: async (id: number, categoryData: CategoryRequestData) => {
+      const response = await api.put<CategoryData>(
+        `/admin/categories/${id}`,
+        categoryData
+      );
+      return response.data;
+    },
+
+    delete: async (id: number) => {
+      await api.delete(`/admin/categories/${id}`);
+    },
+
+    getStats: async () => {
+      const total = await api.get<number>("/admin/categories/stats/total");
+      return { total: total.data };
+    },
   },
 };

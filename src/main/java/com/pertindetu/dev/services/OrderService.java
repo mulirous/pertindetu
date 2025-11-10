@@ -164,4 +164,20 @@ public class OrderService {
         throw new IllegalArgumentException("Unknown status: " + currentStatus);
     }
   }
+
+  // Admin methods
+  public long countAllOrders() {
+    return orderRepository.count();
+  }
+
+  public long countOrdersByStatus(String status) {
+    try {
+      OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
+      return orderRepository.findAll().stream()
+          .filter(order -> order.getStatus() == orderStatus)
+          .count();
+    } catch (IllegalArgumentException e) {
+      return 0;
+    }
+  }
 }

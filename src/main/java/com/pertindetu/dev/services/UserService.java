@@ -73,11 +73,29 @@ public class UserService {
     return userRepository.save(existing);
   }
 
-  @Transactional
+    @Transactional
   public User deleteById(Long id) {
     User userToDelete = findById(id);
 
     userRepository.delete(userToDelete);
     return userToDelete;
+  }
+
+  // Admin methods
+  @Transactional
+  public User toggleUserStatus(Long id) {
+    User user = findById(id);
+    user.setActive(!user.isActive());
+    return userRepository.save(user);
+  }
+
+  public long countTotalUsers() {
+    return userRepository.count();
+  }
+
+  public long countActiveUsers() {
+    return userRepository.findAll().stream()
+        .filter(User::isActive)
+        .count();
   }
 }

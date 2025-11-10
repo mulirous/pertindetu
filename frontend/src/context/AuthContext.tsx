@@ -10,6 +10,7 @@ interface AuthContextType {
   user: UserData | null;
   provider: ProviderProfileData | null;
   isProvider: boolean;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   error: string | null;
@@ -92,6 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     provider,
     isProvider: !!provider,
+    isAdmin: user?.isAdmin || false,
     login,
     logout,
     error,

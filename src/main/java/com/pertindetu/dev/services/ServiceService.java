@@ -103,4 +103,22 @@ public class ServiceService {
     Service s = findById(id);
     serviceRepository.delete(s);
   }
+
+  // Admin methods
+  @Transactional
+  public Service toggleServiceStatus(Long id) {
+    Service service = findById(id);
+    service.setActive(!service.isActive());
+    return serviceRepository.save(service);
+  }
+
+  public long countTotalServices() {
+    return serviceRepository.count();
+  }
+
+  public long countActiveServices() {
+    return serviceRepository.findAll().stream()
+        .filter(Service::isActive)
+        .count();
+  }
 }
