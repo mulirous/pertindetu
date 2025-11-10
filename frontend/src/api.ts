@@ -280,3 +280,150 @@ export const servicesApi = {
     return response.data;
   },
 };
+
+// Order interfaces
+export type OrderStatus =
+  | "PENDING"
+  | "ACCEPTED"
+  | "REJECTED"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export interface OrderClientInfo {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface OrderProviderInfo {
+  id: number;
+  name: string;
+  bio: string;
+  verified: boolean;
+}
+
+export interface OrderServiceInfo {
+  id: number;
+  title: string;
+  description: string;
+  basePrice: number;
+  categoryName: string;
+}
+
+export interface OrderData {
+  id: number;
+  status: OrderStatus;
+  details: string | null;
+  quantity: number;
+  value: number;
+  eventDate: string | null;
+  createdAt: string;
+  client: OrderClientInfo;
+  provider: OrderProviderInfo;
+  service: OrderServiceInfo;
+}
+
+export interface OrderCreateData {
+  serviceId: number;
+  clientId: number;
+  providerId: number;
+  details?: string;
+  quantity: number;
+  value: number;
+  eventDate?: string;
+}
+
+export interface OrderUpdateStatusData {
+  status: OrderStatus;
+}
+
+export interface OrdersPageData {
+  content: OrderData[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+// Orders API
+export const ordersApi = {
+  // Listar todos os pedidos (admin)
+  getAll: async (page = 0, size = 10) => {
+    const response = await api.get<OrdersPageData>("/orders", {
+      params: { page, size, sort: "createdAt,desc" },
+    });
+    return response.data;
+  },
+
+  // Buscar pedido por ID
+  getById: async (id: number) => {
+    const response = await api.get<OrderData>(`/orders/${id}`);
+    return response.data;
+  },
+
+  // Buscar pedidos do cliente (paginado)
+  getByClientId: async (clientId: number, page = 0, size = 10) => {
+    const response = await api.get<OrdersPageData>(
+      `/orders/client/${clientId}`,
+      {
+        params: { page, size, sort: "createdAt,desc" },
+      }
+    );
+    return response.data;
+  },
+
+  // Buscar pedidos do provider (paginado)
+  getByProviderId: async (providerId: number, page = 0, size = 10) => {
+    const response = await api.get<OrdersPageData>(
+      `/orders/provider/${providerId}`,
+      {
+        params: { page, size, sort: "createdAt,desc" },
+      }
+    );
+    return response.data;
+  },
+
+  // Buscar pedidos por status (paginado)
+  getByStatus: async (status: OrderStatus, page = 0, size = 10) => {
+    const response = await api.get<OrdersPageData>(`/orders/status/${status}`, {
+      params: { page, size, sort: "createdAt,desc" },
+    });
+    return response.data;
+  },
+
+  // Criar novo pedido
+  create: async (orderData: OrderCreateData) => {
+    const response = await api.post<OrderData>("/orders", orderData);
+    return response.data;
+  },
+
+  // Atualizar status do pedido (provider)
+  updateStatus: async (
+    id: number,
+    statusData: OrderUpdateStatusData,
+    providerId: number
+  ) => {
+    const response = await api.patch<OrderData>(
+      `/orders/${id}/status`,
+      statusData,
+      {
+        params: { providerId },
+      }
+    );
+    return response.data;
+  },
+
+  // Cancelar pedido (cliente)
+  cancel: async (id: number, clientId: number) => {
+    const response = await api.patch<OrderData>(`/orders/${id}/cancel`, null, {
+      params: { clientId },
+    });
+    return response.data;
+  },
+
+  // Deletar pedido
+  delete: async (id: number) => {
+    await api.delete(`/orders/${id}`);
+  },
+};
