@@ -16,11 +16,9 @@ interface ProviderPublicData {
   id: number;
   bio: string;
   verified: boolean;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-  };
+  userId: number;
+  userName: string;
+  profilePhotoUrl?: string | null;
 }
 
 export function PublicProviderPage() {
@@ -105,11 +103,13 @@ export function PublicProviderPage() {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                {provider.user.name[0].toUpperCase()}
+                {(provider.userName?.[0] || "?").toUpperCase()}
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-3xl font-bold">{provider.user.name}</h1>
+                  <h1 className="text-3xl font-bold">
+                    {provider.userName || "Prestador"}
+                  </h1>
                   {provider.verified && (
                     <CheckCircle className="w-6 h-6 text-blue-500" />
                   )}
@@ -192,7 +192,9 @@ export function PublicProviderPage() {
                   />
                 ) : (
                   <div className="w-full h-48 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                    <span className="text-4xl">{service.category.name[0]}</span>
+                    <span className="text-4xl">
+                      {service.category?.name?.[0] || service.title[0]}
+                    </span>
                   </div>
                 )}
 
@@ -201,9 +203,11 @@ export function PublicProviderPage() {
                     <h3 className="font-semibold text-lg line-clamp-1">
                       {service.title}
                     </h3>
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-                      {service.category.name}
-                    </span>
+                    {service.category?.name && (
+                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                        {service.category.name}
+                      </span>
+                    )}
                   </div>
 
                   <p className="text-sm text-muted-foreground mb-3 line-clamp-2">

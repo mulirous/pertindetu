@@ -40,6 +40,9 @@ public class ServiceService {
       BigDecimal maxPrice, 
       String search, 
       Pageable pageable) {
+    if (search != null && !(search instanceof String)) {
+        search = new String(search.toString()); // fallback seguro
+    }
     return serviceRepository.findByFilters(categoryId, providerId, minPrice, maxPrice, search, pageable);
   }
 

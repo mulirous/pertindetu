@@ -18,15 +18,15 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
     // Buscar serviços por categoria
     Page<Service> findByCategoryId(Long categoryId, Pageable pageable);
     
-    // Buscar serviços com filtros avançados
-    @Query(value = "SELECT * FROM services s WHERE " +
-               "(:categoryId IS NULL OR s.category_id = :categoryId) AND " +
-               "(:providerId IS NULL OR s.provider_id = :providerId) AND " +
-               "(:minPrice IS NULL OR s.base_price >= :minPrice) AND " +
-               "(:maxPrice IS NULL OR s.base_price <= :maxPrice) AND " +
-               "(:search IS NULL OR LOWER(s.title) LIKE LOWER(CONCAT('%', CAST(:search AS text), '%')) " +
-               "OR LOWER(s.description) LIKE LOWER(CONCAT('%', CAST(:search AS text), '%')))",
-       nativeQuery = true)
+    // Buscar serviços com filtros avançados (JPQL)
+    @Query("SELECT s FROM Service s WHERE " +
+        "(:categoryId IS NULL OR s.category.id = :categoryId) AND " +
+        "(:providerId IS NULL OR s.provider.id = :providerId) AND " +
+        "(:minPrice IS NULL OR s.basePrice >= :minPrice) AND " +
+        "(:maxPrice IS NULL OR s.basePrice <= :maxPrice)" //+
+        // "(:search IS NULL OR LOWER(s.title) LIKE LOWER(CONCAT('%', :search, '%')) " +
+        // "OR LOWER(s.description) LIKE LOWER(CONCAT('%', :search, '%')))"
+    )
     Page<Service> findByFilters(
         @Param("categoryId") Long categoryId,
         @Param("providerId") Long providerId,

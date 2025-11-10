@@ -14,6 +14,7 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import io.minio.SetBucketPolicyArgs;
 
 @Service
 public class ImageUploadService {
@@ -87,6 +88,7 @@ public class ImageUploadService {
     /**
      * Verifica se o bucket existe, se não, cria
      */
+
     private void ensureBucketExists() {
         try {
             boolean exists = minioClient.bucketExists(
@@ -98,6 +100,27 @@ public class ImageUploadService {
                 minioClient.makeBucket(
                         MakeBucketArgs.builder()
                                 .bucket(bucketName)
+                                .build());
+
+                // 🔓 Aplicar política pública de leitura
+                String policy = """
+                    {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                        "Effect": "Allow",
+                        "Principal": {"AWS": ["*"]},
+                        "Action": ["s3:GetObject"],
+                        "Resource": ["arn:aws:s3:::%s/*"]
+                        }
+                    ]
+                    }
+                    """.formatted(bucketName);
+
+                minioClient.setBucketPolicy(
+                        SetBucketPolicyArgs.builder()
+                                .bucket(bucketName)
+                                .config(policy)
                                 .build());
             }
         } catch (Exception e) {
