@@ -5,6 +5,7 @@ import {
   User,
   LogOut,
   Shield,
+  LayoutDashboard,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -112,14 +113,52 @@ export default function Header() {
                         Dashboard
                       </Link>
                       {isAdmin && (
-                        <Link
-                          to="/admin"
-                          onClick={() => setShowUserMenu(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors text-orange-600 font-semibold"
-                        >
-                          <Shield className="w-4 h-4" />
-                          Painel Admin
-                        </Link>
+                        <>
+                          <div className="px-4 pt-2 pb-1 text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                            Administração
+                          </div>
+                          <Link
+                            to="/admin"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors text-primary font-semibold"
+                          >
+                            <LayoutDashboard className="w-4 h-4" />
+                            Dashboard
+                          </Link>
+                          <Link
+                            to="/admin/users"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                          >
+                            <Shield className="w-4 h-4" />
+                            Usuários
+                          </Link>
+                          <Link
+                            to="/admin/providers"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                          >
+                            <Shield className="w-4 h-4" />
+                            Prestadores
+                          </Link>
+                          <Link
+                            to="/admin/services"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                          >
+                            <Shield className="w-4 h-4" />
+                            Serviços
+                          </Link>
+                          <Link
+                            to="/admin/orders"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                          >
+                            <Shield className="w-4 h-4" />
+                            Pedidos
+                          </Link>
+                          <div className="h-px bg-border my-1" />
+                        </>
                       )}
                       <button
                         onClick={() => {
