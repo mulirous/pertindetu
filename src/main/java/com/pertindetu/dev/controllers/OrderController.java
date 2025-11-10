@@ -31,7 +31,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/orders")
-@CrossOrigin(origins = "*")
 @Tag(name = "Orders", description = "Endpoints for managing orders")
 public class OrderController {
 

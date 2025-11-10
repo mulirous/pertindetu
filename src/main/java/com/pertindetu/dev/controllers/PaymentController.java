@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +30,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/payments")
-@CrossOrigin(origins = "*")
 @Tag(name = "Payments", description = "Endpoints for managing payments and transactions")
 public class PaymentController {
 
