@@ -459,3 +459,130 @@ export const ordersApi = {
     await api.delete(`/orders/${id}`);
   },
 };
+
+// Review interfaces
+export interface ReviewUserInfo {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface ReviewServiceInfo {
+  id: number;
+  title: string;
+  categoryName: string;
+}
+
+export interface ReviewData {
+  id: number;
+  rating: number;
+  comment: string | null;
+  orderId: number;
+  createdAt: string;
+  user: ReviewUserInfo;
+  service: ReviewServiceInfo;
+}
+
+export interface ReviewCreateData {
+  rating: number;
+  comment?: string;
+  orderId: number;
+  userId: number;
+  serviceId: number;
+}
+
+export interface ReviewsPageData {
+  content: ReviewData[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+// Reviews API
+export const reviewsApi = {
+  // Listar todas as reviews (admin)
+  getAll: async (page = 0, size = 10) => {
+    const response = await api.get<ReviewsPageData>("/reviews", {
+      params: { page, size, sort: "createdAt,desc" },
+    });
+    return response.data;
+  },
+
+  // Buscar reviews de um serviço
+  getByServiceId: async (serviceId: number, page = 0, size = 10) => {
+    const response = await api.get<ReviewsPageData>(
+      `/reviews/service/${serviceId}`,
+      {
+        params: { page, size, sort: "createdAt,desc" },
+      }
+    );
+    return response.data;
+  },
+
+  // Buscar reviews de um usuário
+  getByUserId: async (userId: number, page = 0, size = 10) => {
+    const response = await api.get<ReviewsPageData>(`/reviews/user/${userId}`, {
+      params: { page, size, sort: "createdAt,desc" },
+    });
+    return response.data;
+  },
+
+  // Buscar reviews de um provider
+  getByProviderId: async (providerId: number, page = 0, size = 10) => {
+    const response = await api.get<ReviewsPageData>(
+      `/reviews/provider/${providerId}`,
+      {
+        params: { page, size, sort: "createdAt,desc" },
+      }
+    );
+    return response.data;
+  },
+
+  // Buscar review por ID
+  getById: async (id: number) => {
+    const response = await api.get<ReviewData>(`/reviews/${id}`);
+    return response.data;
+  },
+
+  // Obter média de rating de um serviço
+  getAverageByServiceId: async (serviceId: number) => {
+    const response = await api.get<number>(
+      `/reviews/service/${serviceId}/average`
+    );
+    return response.data;
+  },
+
+  // Obter média de rating de um provider
+  getAverageByProviderId: async (providerId: number) => {
+    const response = await api.get<number>(
+      `/reviews/provider/${providerId}/average`
+    );
+    return response.data;
+  },
+
+  // Obter total de reviews de um serviço
+  getCountByServiceId: async (serviceId: number) => {
+    const response = await api.get<number>(`/reviews/service/${serviceId}/count`);
+    return response.data;
+  },
+
+  // Criar nova review
+  create: async (reviewData: ReviewCreateData) => {
+    const response = await api.post<ReviewData>("/reviews", reviewData);
+    return response.data;
+  },
+
+  // Atualizar review
+  update: async (id: number, reviewData: ReviewCreateData) => {
+    const response = await api.put<ReviewData>(`/reviews/${id}`, reviewData);
+    return response.data;
+  },
+
+  // Deletar review
+  delete: async (id: number, userId: number) => {
+    await api.delete(`/reviews/${id}`, {
+      params: { userId },
+    });
+  },
+};

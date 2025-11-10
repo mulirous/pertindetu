@@ -48,6 +48,18 @@ public class UserService {
   }
 
   @Transactional
+  public User save(UserRequestDTO dto) {
+      User user = new User();
+      user.setName(dto.name());
+      user.setEmail(dto.email());
+      user.setPassword(passwordEncoder.encode(dto.password()));
+      user.setCellphoneNumber(dto.cellphoneNumber());
+      user.setActive(true);
+      user.setDateCreation(Instant.now());
+      return userRepository.save(user);
+  }
+
+  @Transactional
   public User update(Long id, UserRequestDTO dto) {
     User existing = findById(id);
     existing.setName(dto.name());

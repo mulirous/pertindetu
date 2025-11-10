@@ -1,144 +1,74 @@
-import { useState } from "react";import { useState } from 'react';
-
-import { useAuth } from "../context/AuthContext";import { api, getMockUserId } from '../api';
-
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { ordersApi, type OrderCreateData } from "../api";
+import { Calendar } from "lucide-react";
 
-import { Button } from "./ui/button";interface OrderFormProps {
-
-import { ordersApi, type OrderCreateData } from "../api";  serviceId: number;
-
-import { Calendar } from "lucide-react";  providerId: number;
-
-  basePrice: number;
-
-interface OrderFormProps {}
-
+interface OrderFormProps {
   serviceId: number;
-
-  providerId: number;export function OrderForm({ serviceId, providerId, basePrice }: OrderFormProps) {
-
-  serviceName: string;  const [quantity, setQuantity] = useState(1);
-
-  basePrice: number;  const [eventDate, setEventDate] = useState('');
-
-  onSuccess?: () => void;  const [details, setDetails] = useState('');
-
-  onCancel?: () => void;  const [error, setError] = useState<string | null>(null);
-
+  providerId: number;
+  serviceName: string;
+  basePrice: number;
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-
-export function OrderForm({    e.preventDefault();
-
-  serviceId,    setError(null);
-
+export function OrderForm({
+  serviceId,
   providerId,
-
-  serviceName,    const clientId = getMockUserId();
-
+  serviceName,
   basePrice,
+  onSuccess,
+  onCancel,
+}: OrderFormProps) {
+  const { user } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    quantity: 1,
+    details: "",
+    eventDate: "",
+  });
 
-  onSuccess,    const orderData = {
+  const totalValue = basePrice * formData.quantity;
 
-  onCancel,      status: "PENDING", // O status inicial é pendente
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-}: OrderFormProps) {      details: details,
-
-  const { user } = useAuth();      quantity: Number(quantity),
-
-  const [isSubmitting, setIsSubmitting] = useState(false);      value: Number(quantity) * basePrice,
-
-  const [formData, setFormData] = useState({      eventDate: new Date(eventDate).toISOString(),
-
-    quantity: 1,      clientId: clientId,
-
-    details: "",      providerId: providerId,
-
-    eventDate: "",      serviceId: serviceId,
-
-  });    };
-
-
-
-  const totalValue = basePrice * formData.quantity;    try {
-
-      const response = await api.post('/orders', orderData);
-
-  const handleSubmit = async (e: React.FormEvent) => {      
-
-    e.preventDefault();      console.log('Pedido criado com sucesso!', response.data);
-
-
-
-    if (!user) {    } catch (err: any) {
-
-      alert("Você precisa estar logado para fazer um pedido");      console.error('Erro ao criar pedido:', err);
-
-      return;      setError(err.response?.data?.message || 'Erro desconhecido');
-
-    }    }
-
-  };
-
-    setIsSubmitting(true);
-
-    try {  return (
-
-      const orderData: OrderCreateData = {    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded bg-slate-50">
-
-        serviceId,      <h3>Contratar Serviço</h3>
-
-        clientId: user.id,      <div>
-
-        providerId,        <label>Data do Evento/Serviço:</label>
-
-        quantity: formData.quantity,        <input type="datetime-local" value={eventDate} onChange={(e) => setEventDate(e.target.value)} required className="w-full border rounded p-2" />
-
-        value: basePrice,      </div>
-
-        details: formData.details || undefined,      <div>
-
-        eventDate: formData.eventDate || undefined,        <label>Quantidade:</label>
-
-      };        <input type="number" value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} min={1} required className="w-full border rounded p-2" />
-
-      </div>
-
-      await ordersApi.create(orderData);       <div>
-
-      alert("Pedido criado com sucesso! Aguarde a resposta do prestador.");        <label>Detalhes (ex: sabor do bolo, cor, etc.):</label>
-
-      onSuccess?.();        <textarea value={details} onChange={(e) => setDetails(e.target.value)} className="w-full border rounded p-2" />
-
-    } catch (error) {      </div>
-
-      console.error("Erro ao criar pedido:", error);      
-
-      alert("Erro ao criar pedido. Tente novamente.");      <div className="font-bold">
-
-    } finally {        Valor Total: R$ {(quantity * basePrice).toFixed(2)}
-
-      setIsSubmitting(false);      </div>
-
+    if (!user) {
+      alert("Você precisa estar logado para fazer um pedido");
+      return;
     }
 
-  };      {error && <p className="text-red-500">{error}</p>}
+    setIsSubmitting(true);
+    try {
+      const orderData: OrderCreateData = {
+        serviceId,
+        clientId: user.id,
+        providerId,
+        quantity: formData.quantity,
+        value: basePrice,
+        details: formData.details || undefined,
+        eventDate: formData.eventDate || undefined,
+      };
 
-      
+      await ordersApi.create(orderData);
+      alert("Pedido criado com sucesso! Aguarde a resposta do prestador.");
+      onSuccess?.();
+    } catch (error) {
+      console.error("Erro ao criar pedido:", error);
+      alert("Erro ao criar pedido. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-  const handleInputChange = (      <button type="submit" className="bg-green-600 text-white p-2 rounded w-full">
-
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>        Confirmar Pedido
-
-  ) => {      </button>
-
-    const { name, value } = e.target;    </form>
-
-    setFormData((prev) => ({ ...prev, [name]: value }));  );
-
-  };}
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   if (!user) {
     return (
@@ -229,11 +159,7 @@ export function OrderForm({    e.preventDefault();
                 Cancelar
               </Button>
             )}
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1"
-            >
+            <Button type="submit" disabled={isSubmitting} className="flex-1">
               {isSubmitting ? "Enviando..." : "Confirmar Pedido"}
             </Button>
           </div>

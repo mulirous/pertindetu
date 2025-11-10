@@ -15,6 +15,8 @@ import { ServiceCreatePage } from "./pages/ServiceCreatePage";
 import { MyOrdersPage } from "./pages/MyOrdersPage";
 import { ProviderOrdersPage } from "./pages/ProviderOrdersPage";
 import { ServicesPage } from "./pages/ServicesPage";
+import { ServiceDetailPage } from "./pages/ServiceDetailPage";
+import { PublicProviderPage } from "./pages/PublicProviderPage";
 
 const router = createBrowserRouter([
   {
@@ -52,6 +54,14 @@ const router = createBrowserRouter([
       {
         path: "/services",
         element: <ServicesPage />,
+      },
+      {
+        path: "/services/:id",
+        element: <ServiceDetailPage />,
+      },
+      {
+        path: "/providers/:id",
+        element: <PublicProviderPage />,
       },
       {
         path: "/my-orders",
