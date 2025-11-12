@@ -385,7 +385,7 @@ export interface OrderCreateData {
   details?: string;
   quantity: number;
   value: number;
-  eventDate?: string;
+  eventDate?: number;
 }
 
 export interface OrderUpdateStatusData {
