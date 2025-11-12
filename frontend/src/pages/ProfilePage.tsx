@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { servicesApi } from "../api";
+import { ordersApi, servicesApi } from "../api";
 import type { ServiceData } from "../api";
 import Header from "../components/header";
 import Footer from "../components/footer";
@@ -15,12 +15,16 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const [showProviderForm, setShowProviderForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [services, setServices] = useState<ServiceData[]>([]);
+  const [services, setServices] = useState<any>([]);
+  const [totalServices, setTotalServices] = useState<number>(0);
+  const [totalOrders, setTotalOrders] = useState<number>(0);
   const [loadingServices, setLoadingServices] = useState(false);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
   useEffect(() => {
     if (isProvider && provider) {
       loadServices();
+      loadTotalOrders();
     }
   }, [isProvider, provider]);
 
@@ -32,10 +36,25 @@ export default function ProfilePage() {
       const response = await servicesApi.getByProviderId(provider.id);
       console.log(response);
       setServices(response.content);
+      setTotalServices(response.totalElements);
     } catch (error) {
       console.error("Erro ao carregar serviços:", error);
     } finally {
       setLoadingServices(false);
+    }
+  };
+
+  const loadTotalOrders = async () => {
+    if (!provider) return;
+
+    setLoadingOrders(true);
+    try {
+      const response = await ordersApi.getByProviderId(provider.id, 0, 10);
+      setTotalOrders(response.totalElements);
+    } catch (error) {
+      console.error("Erro ao carregar pedidos:", error);
+    } finally {
+      setLoadingOrders(false);
     }
   };
 
@@ -186,7 +205,7 @@ export default function ProfilePage() {
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {services.map((service) => (
+                        {services.map((service: any) => (
                           <div
                             key={service.id}
                             className="border-2 border-border rounded-lg p-4 hover:border-primary transition-colors">
@@ -264,11 +283,11 @@ export default function ProfilePage() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Serviços</span>
-                      <span className="font-bold">{services.length}</span>
+                      <span className="font-bold">{totalServices}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Pedidos</span>
-                      <span className="font-bold">0</span>
+                      <span className="font-bold">{totalOrders}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Avaliações</span>

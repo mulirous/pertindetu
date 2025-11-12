@@ -32,6 +32,15 @@ export function OrderCard({
     userRole === "provider" && canProviderUpdateStatus(order.status);
   const nextStatuses = getNextStatuses(order.status);
 
+  console.log("🎴 OrderCard renderizado:", {
+    orderId: order.id,
+    status: order.status,
+    userRole,
+    showStatusActions,
+    nextStatuses,
+    hasUpdateStatusHandler: !!onUpdateStatus,
+  });
+
   return (
     <Card className="p-6 hover:shadow-lg transition-shadow">
       <div className="flex justify-between items-start mb-4">
@@ -98,8 +107,19 @@ export function OrderCard({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onViewDetails(order.id)}
-            >
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log(
+                  "🔘 OrderCard: Botão Detalhes clicado, orderId:",
+                  order.id
+                );
+                console.log(
+                  "🔘 OrderCard: onViewDetails existe?",
+                  !!onViewDetails
+                );
+                onViewDetails(order.id);
+              }}>
               Detalhes
             </Button>
           )}
@@ -108,8 +128,7 @@ export function OrderCard({
             <Button
               variant="destructive"
               size="sm"
-              onClick={() => onCancel(order.id)}
-            >
+              onClick={() => onCancel(order.id)}>
               <X className="w-4 h-4 mr-1" />
               Cancelar
             </Button>
@@ -126,8 +145,15 @@ export function OrderCard({
                       : "default"
                   }
                   size="sm"
-                  onClick={() => onUpdateStatus(order.id, status)}
-                >
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log("🔄 Botão de status clicado:", {
+                      orderId: order.id,
+                      newStatus: status,
+                    });
+                    onUpdateStatus(order.id, status);
+                  }}>
                   {status === "ACCEPTED" && "Aceitar"}
                   {status === "REJECTED" && "Rejeitar"}
                   {status === "IN_PROGRESS" && "Iniciar"}
