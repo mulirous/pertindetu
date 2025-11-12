@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/service-media")
+@RequestMapping("/api/service-media")
 @Tag(name = "Service Media", description = "Endpoints for managing service images and media files")
 public class ServiceMediaController {
 

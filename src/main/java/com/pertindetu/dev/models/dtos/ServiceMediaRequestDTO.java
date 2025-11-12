@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record ServiceMediaRequestDTO(
     @NotNull MediaType type,
+    String mediaUrl,
     String shortDescription,
-    @NotNull Long order,
+    Long order,
     @NotNull Long serviceId) {
 }

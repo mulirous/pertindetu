@@ -5,8 +5,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 import com.pertindetu.dev.models.Order;
-import com.pertindetu.dev.models.ProviderProfile;
-import com.pertindetu.dev.models.User;
 import com.pertindetu.dev.models.enums.OrderStatus;
 
 public record OrderResponseDTO(
@@ -17,11 +15,10 @@ public record OrderResponseDTO(
     BigDecimal value,
     Date eventDate,
     Timestamp createdAt,
-    User client,
-    ProviderProfile provider,
-    Long serviceId,
-    Long paymentId,
-    Long evaluationId) {
+    ClientInfoDTO client,
+    ProviderInfoDTO provider,
+    ServiceInfoDTO service
+) {
   public OrderResponseDTO(Order order) {
     this(
         order.getId(),
@@ -31,10 +28,24 @@ public record OrderResponseDTO(
         order.getValue(),
         order.getEventDate(),
         order.getCreatedAt(),
-        order.getClient(),
-        order.getProvider(),
-        order.getServiceId(),
-        order.getPaymentId(),
-        order.getEvaluationId());
+        new ClientInfoDTO(order.getClient().getId(), order.getClient().getName(), order.getClient().getEmail()),
+        new ProviderInfoDTO(
+            order.getProvider().getId(),
+            order.getProvider().getUser().getName(),
+            order.getProvider().getBio(),
+            order.getProvider().isVerified()
+        ),
+        new ServiceInfoDTO(
+            order.getService().getId(),
+            order.getService().getTitle(),
+            order.getService().getDescription(),
+            order.getService().getBasePrice(),
+            order.getService().getCategory().getName()
+        )
+    );
   }
+
+  public record ClientInfoDTO(Long id, String name, String email) {}
+  public record ProviderInfoDTO(Long id, String name, String bio, boolean verified) {}
+  public record ServiceInfoDTO(Long id, String title, String description, BigDecimal basePrice, String categoryName) {}
 }

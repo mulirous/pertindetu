@@ -1,120 +1,77 @@
-import CarouselSection from "../components/carousel-section"
-import CategoriesSection from "../components/categories-section"
-import Footer from "../components/footer"
-import Header from "../components/header"
-import HeroSection from "../components/hero-section"
+import { useState, useEffect } from "react";
+import CarouselSection from "../components/carousel-section";
+import CategoriesSection from "../components/categories-section";
+import Footer from "../components/footer";
+import Header from "../components/header";
+import HeroSection from "../components/hero-section";
+import { servicesApi, type ServiceData } from "../api";
+import { Loader2 } from "lucide-react";
 
 export default function Home() {
+  const [recentServices, setRecentServices] = useState<ServiceData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      // Buscar serviços mais recentes
+      const servicesData = await servicesApi.getPublic({}, 0, 8);
+      setRecentServices(servicesData.content || []);
+    } catch (error) {
+      console.error("Erro ao carregar dados da homepage:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Converter serviços para o formato do carousel
+  const servicesItems = recentServices.map((service) => ({
+    id: service.id,
+    image:
+      service.media && service.media.length > 0
+        ? service.media[0].mediaUrl
+        : "/placeholder-service.jpg",
+    title: service.title,
+    category: service.category.name,
+    rating: 4.5, // Poderia vir da API de reviews
+    reviews: 0,
+    distance: 0,
+  }));
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main>
         <HeroSection />
-        <CarouselSection title="Descobertas Perto de Você" items={nearbyItems} />
         <CategoriesSection />
-        <CarouselSection title="Em Alta Agora" items={trendingItems} />
-        <CarouselSection title="Avaliações Recentes" items={recentReviewsItems} />
+        {servicesItems.length > 0 && (
+          <>
+            <CarouselSection
+              title="Serviços Disponíveis"
+              items={servicesItems.slice(0, 4)}
+            />
+            {servicesItems.length > 4 && (
+              <CarouselSection
+                title="Mais Serviços"
+                items={servicesItems.slice(4, 8)}
+              />
+            )}
+          </>
+        )}
       </main>
       <Footer />
     </div>
-  )
+  );
 }
-
-const nearbyItems = [
-  {
-    id: 1,
-    image: "/decadent-chocolate-cake.png",
-    title: "Delícias da Lúcia",
-    category: "Doces e Artesanato",
-    rating: 4.8,
-    reviews: 348,
-    distance: 1.2,
-  },
-  {
-    id: 2,
-    image: "/jewelry-necklace.jpg",
-    title: "Pulseiras Artesanais",
-    category: "A Roupa Imperial",
-    rating: 4.6,
-    reviews: 123,
-    distance: 2.1,
-  },
-  {
-    id: 3,
-    image: "/makeup-cosmetics-flatlay.png",
-    title: "Coisas do P1",
-    category: "Cosméticos Virais",
-    rating: 4.6,
-    reviews: 256,
-    distance: 2.3,
-  },
-  {
-    id: 4,
-    image: "/handmade-craft.jpg",
-    title: "Arte Manual",
-    category: "Artesanato Premium",
-    rating: 4.7,
-    reviews: 189,
-    distance: 3.5,
-  },
-]
-
-const trendingItems = [
-  {
-    id: 5,
-    image: "/chocolate-cake-dessert.jpg",
-    title: "Delícias da Lúcia",
-    category: "Doces Artesanais",
-    rating: 4.8,
-    reviews: 780,
-    distance: 1.2,
-  },
-  {
-    id: 6,
-    image: "/elegant-jewelry.jpg",
-    title: "Pulseiras Artesanais",
-    category: "Jóias Premium",
-    rating: 4.6,
-    reviews: 432,
-    distance: 2.1,
-  },
-  {
-    id: 7,
-    image: "/assorted-cosmetics.png",
-    title: "Coisas do P1",
-    category: "Cosméticos Virais",
-    rating: 4.6,
-    reviews: 556,
-    distance: 2.3,
-  },
-]
-
-const recentReviewsItems = [
-  {
-    id: 8,
-    image: "/delicious-cake.jpg",
-    title: "Delícias da Lúcia",
-    category: "Doces Artesanais",
-    rating: 4.7,
-    reviews: 1423,
-    distance: 1.2,
-  },
-  {
-    id: 9,
-    image: "/silver-jewelry-accessories.jpg",
-    title: "Pulseiras Artesanais",
-    category: "A roupa imperial",
-    rating: 4.6,
-    reviews: 892,
-    distance: 2.1,
-  },
-  {
-    id: 10,
-    image: "/makeup-cosmetics-palette.jpg",
-    title: "Coisas do P1",
-    category: "Cosméticos Virais",
-    rating: 4.6,
-    reviews: 2123,
-    distance: 2.3,
-  },
-]

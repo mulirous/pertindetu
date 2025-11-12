@@ -1,5 +1,7 @@
 package com.pertindetu.dev.services;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,9 +33,30 @@ public class ServiceService {
     return serviceRepository.findAll(pageable);
   }
 
+  public Page<Service> findByFilters(
+      Long categoryId, 
+      Long providerId, 
+      BigDecimal minPrice, 
+      BigDecimal maxPrice, 
+      String search, 
+      Pageable pageable) {
+    if (search != null && !(search instanceof String)) {
+        search = new String(search.toString()); // fallback seguro
+    }
+    return serviceRepository.findByFilters(categoryId, providerId, minPrice, maxPrice, search, pageable);
+  }
+
   public Service findById(Long id) {
     return serviceRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+  }
+
+  public Service findByIdWithDetails(Long id) {
+    Service service = serviceRepository.findByIdWithDetails(id);
+    if (service == null) {
+      throw new ResourceNotFoundException("Service not found");
+    }
+    return service;
   }
 
   @Transactional
@@ -52,6 +75,7 @@ public class ServiceService {
     service.setAvgDuration(dto.avgDuration());
     service.setProvider(provider);
     service.setCategory(category);
+    service.setUpdatedAt(java.time.Instant.now());
 
     return serviceRepository.save(service);
   }
@@ -74,6 +98,7 @@ public class ServiceService {
 
     existing.setProvider(provider);
     existing.setCategory(category);
+    existing.setUpdatedAt(java.time.Instant.now());
 
     return serviceRepository.save(existing);
   }
@@ -82,5 +107,21 @@ public class ServiceService {
   public void delete(Long id) {
     Service s = findById(id);
     serviceRepository.delete(s);
+  }
+
+  // Admin methods
+  @Transactional
+  public Service toggleServiceStatus(Long id) {
+    Service service = findById(id);
+    service.setActive(!service.isActive());
+    return serviceRepository.save(service);
+  }
+
+  public long countTotalServices() {
+    return serviceRepository.count();
+  }
+
+  public long countActiveServices() {
+    return serviceRepository.countByActiveTrue();
   }
 }

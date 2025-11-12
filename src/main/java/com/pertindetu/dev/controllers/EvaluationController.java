@@ -31,7 +31,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/evaluations")
-@CrossOrigin(origins = "*")
 @Tag(name = "Evaluations", description = "Endpoints for managing service evaluations and ratings")
 public class EvaluationController {
 

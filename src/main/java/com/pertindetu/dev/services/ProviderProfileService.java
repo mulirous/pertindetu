@@ -82,9 +82,30 @@ public class ProviderProfileService {
     return providerProfileRepository.save(existing);
   }
 
-  @Transactional
+    @Transactional
   public void delete(Long id) {
     ProviderProfile profile = findById(id);
     providerProfileRepository.delete(profile);
+  }
+
+  // Admin methods
+  @Transactional
+  public ProviderProfile toggleVerification(Long id) {
+    ProviderProfile profile = findById(id);
+    profile.setVerified(!profile.isVerified());
+    return providerProfileRepository.save(profile);
+  }
+
+  public long countTotalProviders() {
+    return providerProfileRepository.count();
+  }
+
+  public long countVerifiedProviders() {
+    return providerProfileRepository.countByVerifiedTrue();
+  }
+
+  public ProviderProfile findByUserId(Long userId) {
+    return providerProfileRepository.findByUserId(userId)
+        .orElseThrow(() -> new ResourceNotFoundException("ProviderProfile not found for user ID " + userId));
   }
 }

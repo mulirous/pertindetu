@@ -32,7 +32,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("address")
-@CrossOrigin(origins = "*")
 @Tag(name = "Addresses", description = "Endpoints for managing user addresses")
 public class AddressController {
 

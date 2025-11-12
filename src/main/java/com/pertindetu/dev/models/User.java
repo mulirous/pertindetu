@@ -54,6 +54,9 @@ public class User {
   @Column(nullable = false)
   private boolean active;
 
+  @Column(nullable = false)
+  private boolean isAdmin = false;
+
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "address_id", referencedColumnName = "id")
   @JsonIgnore
@@ -62,4 +65,12 @@ public class User {
   @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JsonIgnore
   private List<Order> orders;
+
+  public boolean isAdmin() {
+    return isAdmin;
+  }
+
+  public void setAdmin(boolean admin) {
+    this.isAdmin = admin;
+  }
 }

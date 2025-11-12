@@ -1,16 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import './index.css';
+import "./index.css";
 
-import RootLayout from './components/RootLayout';
+import RootLayout from "./components/RootLayout";
 
-import DashboardPage from './pages/DashboardPage';
-import Homepage from './pages/Homepage';
-import LoginPage from './pages/LoginPage';
-import ProfilePage from './pages/Profilepage';
-import ProviderCreatePage from './pages/ProviderCreatePage';
-import RegisterPage from './pages/RegisterPage';
+import { AdminDashboardPage } from "./pages/AdminDashboardPage";
+import DashboardPage from "./pages/DashboardPage";
+import Homepage from "./pages/Homepage";
+import LoginPage from "./pages/LoginPage";
+import { MyOrdersPage } from "./pages/MyOrdersPage";
+import { MyReviewsPage } from "./pages/MyReviewsPage";
+import ProfilePage from "./pages/ProfilePage";
+import ProviderCreatePage from "./pages/ProviderCreatePage";
+import { ProviderOrdersPage } from "./pages/ProviderOrdersPage";
+import { ProviderReviewsPage } from "./pages/ProviderReviewsPage";
+import { PublicProviderPage } from "./pages/PublicProviderPage";
+import RegisterPage from "./pages/RegisterPage";
+import { ServiceCreatePage } from "./pages/ServiceCreatePage";
+import { ServiceDetailPage } from "./pages/ServiceDetailPage";
+import { ServicesPage } from "./pages/ServicesPage";
 
 const router = createBrowserRouter([
   {
@@ -22,7 +30,7 @@ const router = createBrowserRouter([
         element: <Homepage />,
       },
       {
-        path: "/profile/:id",
+        path: "/profile",
         element: <ProfilePage />,
       },
       {
@@ -41,12 +49,48 @@ const router = createBrowserRouter([
         path: "/providers/new",
         element: <ProviderCreatePage />,
       },
-    ]
+      {
+        path: "/services/new",
+        element: <ServiceCreatePage />,
+      },
+      {
+        path: "/services",
+        element: <ServicesPage />,
+      },
+      {
+        path: "/services/:id",
+        element: <ServiceDetailPage />,
+      },
+      {
+        path: "/providers/:id",
+        element: <PublicProviderPage />,
+      },
+      {
+        path: "/my-orders",
+        element: <MyOrdersPage />,
+      },
+      {
+        path: "/provider/orders",
+        element: <ProviderOrdersPage />,
+      },
+      {
+        path: "/my-reviews",
+        element: <MyReviewsPage />,
+      },
+      {
+        path: "/provider/reviews",
+        element: <ProviderReviewsPage />,
+      },
+      {
+        path: "/admin",
+        element: <AdminDashboardPage />,
+      },
+    ],
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+ReactDOM.createRoot(document.getElementById("root")!).render(
+
     <RouterProvider router={router} />
-  </React.StrictMode>,
-)
+
+);

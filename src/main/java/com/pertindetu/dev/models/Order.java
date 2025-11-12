@@ -56,7 +56,10 @@ public class Order {
   @JoinColumn(name = "provider_id", nullable = false)
   private ProviderProfile provider;
 
-  private Long serviceId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "service_id", nullable = false)
+  private Service service;
+
   private Long paymentId;
   private Long evaluationId;
 

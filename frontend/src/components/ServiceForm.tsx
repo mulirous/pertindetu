@@ -1,70 +1,237 @@
-import { useState } from 'react';
-import { api } from '../api';
+import { useState, useEffect } from "react";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
+import { categoriesApi, servicesApi } from "../api";
+import type { ServiceCreateData, CategoryData } from "../api";
+import { useAuth } from "../context/AuthContext";
 
-const LOGGED_IN_PROVIDER_ID = 1;
+interface ServiceFormProps {
+  onSuccess?: () => void;
+}
 
-export function ServiceForm() {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [basePrice, setBasePrice] = useState('');
-  const [avgDuration, setAvgDuration] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [error, setError] = useState<string | null>(null);
+export function ServiceForm({ onSuccess }: ServiceFormProps) {
+  const { provider } = useAuth();
+  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const [formData, setFormData] = useState<ServiceCreateData>({
+    title: "",
+    description: "",
+    basePrice: 0,
+    active: true,
+    avgDuration: 0,
+    providerId: provider?.id || 0,
+    categoryId: 0,
+  });
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  useEffect(() => {
+    if (provider) {
+      setFormData((prev) => ({ ...prev, providerId: provider.id }));
+    }
+  }, [provider]);
+
+  const loadCategories = async () => {
+    try {
+      const data = await categoriesApi.getAll();
+      setCategories(data);
+      if (data.length > 0) {
+        setFormData((prev) => ({ ...prev, categoryId: data[0].id }));
+      }
+    } catch (error) {
+      console.error("Erro ao carregar categorias:", error);
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
-    const serviceData = {
-      title: title,
-      description: description,
-      basePrice: Number(basePrice),
-      active: true,
-      avgDuration: Number(avgDuration),
-      providerId: LOGGED_IN_PROVIDER_ID,
-      categoryId: Number(categoryId)
-    };
+    if (!provider) {
+      alert("Você precisa ser um prestador para criar serviços");
+      return;
+    }
 
+    setLoading(true);
     try {
-      const response = await api.post('/services', serviceData);
-      
-      console.log('Serviço (anúncio) criado!', response.data);
+      // Criar o serviço
+      const service = await servicesApi.create(formData);
 
-    } catch (err: any) {
-      console.error('Erro ao criar serviço:', err);
-      setError(err.response?.data?.message || 'Erro desconhecido');
+      // Se houver imagem, fazer upload
+      if (imageFile) {
+        await servicesApi.uploadMedia(service.id, imageFile);
+      }
+
+      alert("Serviço criado com sucesso!");
+
+      // Limpar formulário
+      setFormData({
+        title: "",
+        description: "",
+        basePrice: 0,
+        active: true,
+        avgDuration: 0,
+        providerId: provider.id,
+        categoryId: categories[0]?.id || 0,
+      });
+      setImageFile(null);
+      setImagePreview(null);
+
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      console.error("Erro ao criar serviço:", error);
+      alert("Erro ao criar serviço. Tente novamente.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded">
-      <h2>Criar Novo Serviço (Anúncio)</h2>
-      <div>
-        <label>Título:</label>
-        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full border rounded p-2" />
-      </div>
-      <div>
-        <label>Descrição:</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} required className="w-full border rounded p-2" />
-      </div>
-      <div>
-        <label>Preço Base (R$):</label>
-        <input type="number" value={basePrice} onChange={(e) => setBasePrice(e.target.value)} required className="w-full border rounded p-2" />
-      </div>
-       <div>
-        <label>Duração Média (minutos):</label>
-        <input type="number" value={avgDuration} onChange={(e) => setAvgDuration(e.target.value)} required className="w-full border rounded p-2" />
-      </div>
-      <div>
-        <label>ID da Categoria:</label>
-        <input type="number" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required className="w-full border rounded p-2" />
-      </div>
-      
-      {error && <p className="text-red-500">{error}</p>}
-      
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-        Criar Serviço
-      </button>
-    </form>
+    <Card className="p-6">
+      <h2 className="text-2xl font-bold mb-4">Criar Novo Serviço</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Título</label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+            className="w-full px-3 py-2 border rounded-md"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Descrição</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            className="w-full px-3 py-2 border rounded-md"
+            rows={4}
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Preço Base (R$)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.basePrice}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  basePrice: parseFloat(e.target.value),
+                })
+              }
+              className="w-full px-3 py-2 border rounded-md"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Duração Média (horas)
+            </label>
+            <input
+              type="number"
+              step="0.5"
+              min="0"
+              value={formData.avgDuration}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  avgDuration: parseFloat(e.target.value),
+                })
+              }
+              className="w-full px-3 py-2 border rounded-md"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Categoria</label>
+          <select
+            value={formData.categoryId}
+            onChange={(e) =>
+              setFormData({ ...formData, categoryId: parseInt(e.target.value) })
+            }
+            className="w-full px-3 py-2 border rounded-md"
+            required
+          >
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Imagem do Serviço
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="mt-2 w-full h-48 object-cover rounded-md"
+            />
+          )}
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="active"
+            checked={formData.active}
+            onChange={(e) =>
+              setFormData({ ...formData, active: e.target.checked })
+            }
+            className="mr-2"
+          />
+          <label htmlFor="active" className="text-sm font-medium">
+            Serviço Ativo
+          </label>
+        </div>
+
+        <Button type="submit" disabled={loading} className="w-full">
+          {loading ? "Criando..." : "Criar Serviço"}
+        </Button>
+      </form>
+    </Card>
   );
 }

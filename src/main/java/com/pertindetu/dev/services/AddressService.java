@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.pertindetu.dev.exceptions.ResourceNotFoundException;
 import com.pertindetu.dev.models.Address;
+import com.pertindetu.dev.models.User;
 import com.pertindetu.dev.models.dtos.AddressRequestDTO;
 import com.pertindetu.dev.repositories.AddressRepository;
 
@@ -35,10 +36,11 @@ public class AddressService {
   }
 
   @Transactional
-  public Address update(Long id, AddressRequestDTO dto) {
-    Address existing = findById(id);
-    copyDtoToEntity(dto, existing);
-    return addressRepository.save(existing);
+  public Address save(AddressRequestDTO dto, User user) {
+      Address address = new Address();
+      copyDtoToEntity(dto, address);
+      address.setUser(user);
+      return addressRepository.save(address);
   }
 
   @Transactional
@@ -47,6 +49,27 @@ public class AddressService {
       throw new ResourceNotFoundException("Address with ID " + id + " not found.");
     }
     addressRepository.deleteById(id);
+  }
+
+
+  @Transactional
+  public Address update(Long id, AddressRequestDTO dto, User user) {
+      Address existing = findById(id);
+      copyDtoToEntity(dto, existing);
+      
+      if (user != null) {
+          existing.setUser(user);
+      }
+      
+      return addressRepository.save(existing);
+  }
+
+  @Transactional
+  public Address update(Long id, AddressRequestDTO dto) {
+      Address existing = findById(id);
+      copyDtoToEntity(dto, existing);
+      // Mantém o user existente sem alterá-lo
+      return addressRepository.save(existing);
   }
 
   private void copyDtoToEntity(AddressRequestDTO dto, Address address) {

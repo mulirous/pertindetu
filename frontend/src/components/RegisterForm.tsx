@@ -1,59 +1,216 @@
-import { useState } from 'react';
-import { api } from '../api';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authApi } from "../api";
+
+interface FormData {
+  user: {
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    cellphoneNumber: string;
+  };
+  address: {
+    street: string;
+    number: number;
+    neighborhood: string;
+    city: string;
+    federativeUnit: string;
+    postalCode: string;
+  };
+}
 
 export function RegisterForm() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [cellphone, setCellphone] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<FormData>({
+    user: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      cellphoneNumber: "",
+    },
+    address: {
+      street: "",
+      number: 0,
+      neighborhood: "",
+      city: "",
+      federativeUnit: "",
+      postalCode: "",
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const [section, field] = name.split(".");
+
+    setFormData((prev) => ({
+      ...prev,
+      [section]: {
+        ...prev[section as keyof FormData],
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    const userData = {
-      name: name,
-      email: email,
-      password: password,
-      cellphoneNumber: cellphone,
-    };
+    if (formData.user.password !== formData.user.confirmPassword) {
+      setError("As senhas não conferem.");
+      return;
+    }
 
     try {
-      const response = await api.post('/users', userData);
-      
-      console.log('Usuário criado com sucesso!', response.data);
+      const response = await authApi.register({
+        user: {
+          name: formData.user.name,
+          email: formData.user.email,
+          password: formData.user.password,
+          cellphoneNumber: formData.user.cellphoneNumber,
+        },
+        address: {
+          ...formData.address,
+          number: Number(formData.address.number),
+        },
+      });
 
+      if (response.statusCode === 201) {
+        navigate("/login");
+      } else {
+        setError(response.message);
+      }
     } catch (err: any) {
-      console.error('Erro ao criar usuário:', err);
-      setError(err.response?.data?.message || 'Erro desconhecido');
+      setError(err.response?.data?.message || "Erro ao criar conta.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded">
-      <h2>Criar Conta de Cliente</h2>
-      <div>
-        <label>Nome:</label>
-        <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="w-full border rounded p-2" />
+    <form onSubmit={handleRegister} className="space-y-6">
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Dados Pessoais</h2>
+        <input
+          type="text"
+          name="user.name"
+          placeholder="Nome Completo"
+          value={formData.user.name}
+          onChange={handleChange}
+          required
+          className="w-full px-6 py-4 border-2 border-border rounded-lg text-lg placeholder-muted-foreground bg-background text-foreground focus:outline-none focus:border-primary"
+        />
+        <input
+          type="email"
+          name="user.email"
+          placeholder="E-mail"
+          value={formData.user.email}
+          onChange={handleChange}
+          required
+          className="w-full px-6 py-4 border-2 border-border rounded-lg text-lg placeholder-muted-foreground bg-background text-foreground focus:outline-none focus:border-primary"
+        />
+        <input
+          type="text"
+          name="user.cellphoneNumber"
+          placeholder="Celular (com DDD)"
+          value={formData.user.cellphoneNumber}
+          onChange={handleChange}
+          required
+          className="w-full px-6 py-4 border-2 border-border rounded-lg text-lg placeholder-muted-foreground bg-background text-foreground focus:outline-none focus:border-primary"
+        />
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            type="password"
+            name="user.password"
+            placeholder="Senha"
+            value={formData.user.password}
+            onChange={handleChange}
+            required
+            className="px-6 py-4 border-2 border-border rounded-lg text-lg placeholder-muted-foreground bg-background text-foreground focus:outline-none focus:border-primary"
+          />
+          <input
+            type="password"
+            name="user.confirmPassword"
+            placeholder="Confirmar senha"
+            value={formData.user.confirmPassword}
+            onChange={handleChange}
+            required
+            className="px-6 py-4 border-2 border-border rounded-lg text-lg placeholder-muted-foreground bg-background text-foreground focus:outline-none focus:border-primary"
+          />
+        </div>
       </div>
-      <div>
-        <label>Email:</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full border rounded p-2" />
+
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Endereço</h2>
+        <input
+          type="text"
+          name="address.street"
+          placeholder="Rua"
+          value={formData.address.street}
+          onChange={handleChange}
+          required
+          className="w-full px-6 py-4 border-2 border-border rounded-lg text-lg placeholder-muted-foreground bg-background text-foreground focus:outline-none focus:border-primary"
+        />
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            type="number"
+            name="address.number"
+            placeholder="Número"
+            value={formData.address.number}
+            onChange={handleChange}
+            required
+            className="px-6 py-4 border-2 border-border rounded-lg text-lg placeholder-muted-foreground bg-background text-foreground focus:outline-none focus:border-primary"
+          />
+          <input
+            type="text"
+            name="address.neighborhood"
+            placeholder="Bairro"
+            value={formData.address.neighborhood}
+            onChange={handleChange}
+            required
+            className="px-6 py-4 border-2 border-border rounded-lg text-lg placeholder-muted-foreground bg-background text-foreground focus:outline-none focus:border-primary"
+          />
+        </div>
+        <input
+          type="text"
+          name="address.city"
+          placeholder="Cidade"
+          value={formData.address.city}
+          onChange={handleChange}
+          required
+          className="w-full px-6 py-4 border-2 border-border rounded-lg text-lg placeholder-muted-foreground bg-background text-foreground focus:outline-none focus:border-primary"
+        />
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            type="text"
+            name="address.federativeUnit"
+            placeholder="UF"
+            maxLength={2}
+            value={formData.address.federativeUnit}
+            onChange={handleChange}
+            required
+            className="px-6 py-4 border-2 border-border rounded-lg text-lg placeholder-muted-foreground bg-background text-foreground focus:outline-none focus:border-primary"
+          />
+          <input
+            type="text"
+            name="address.postalCode"
+            placeholder="CEP"
+            value={formData.address.postalCode}
+            onChange={handleChange}
+            required
+            className="px-6 py-4 border-2 border-border rounded-lg text-lg placeholder-muted-foreground bg-background text-foreground focus:outline-none focus:border-primary"
+          />
+        </div>
       </div>
-      <div>
-        <label>Senha:</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full border rounded p-2" />
-      </div>
-      <div>
-        <label>Celular:</label>
-        <input type="text" value={cellphone} onChange={(e) => setCellphone(e.target.value)} required className="w-full border rounded p-2" />
-      </div>
-      
-      {error && <p className="text-red-500">{error}</p>}
-      
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-        Registrar
+
+      {error && <p className="text-red-500 text-center">{error}</p>}
+
+      <button
+        type="submit"
+        className="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-4 rounded-lg text-lg transition-colors"
+      >
+        CADASTRAR
       </button>
     </form>
   );

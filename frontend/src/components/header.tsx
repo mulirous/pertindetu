@@ -1,11 +1,43 @@
-import { Heart, Search, ShoppingCart, User } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../AuthContext";
+import {
+  Heart,
+  LayoutDashboard,
+  LogOut,
+  Search,
+  Shield,
+  ShoppingCart,
+  User,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const { isLoggedIn } = useAuth()
+  
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { isLoggedIn, user, logout, isAdmin, isProvider } = useAuth();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    if (showUserMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showUserMenu]);
+
+  const redirectToLogin = () => {
+    navigate("/login");
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
@@ -18,7 +50,9 @@ export default function Header() {
               <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
                 <Heart className="w-5 h-5 text-white fill-white" />
               </div>
-              <span className="font-bold text-lg text-foreground">PERTINDETU</span>
+              <span className="font-bold text-lg text-foreground">
+                PERTINDETU
+              </span>
             </Link>
           </div>
 
@@ -38,13 +72,119 @@ export default function Header() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-4">
-            <Link
-              to={isLoggedIn ? "/providers/new" : "/login"}
-              title={isLoggedIn ? "Seja um Prestador" : "Fazer Login"}
-              className="p-2 hover:bg-secondary rounded-full transition-colors"
-            >
-              <User className="w-5 h-5 text-foreground" />
-            </Link>
+            {isLoggedIn && (
+              <div className="hover:bg-secondary rounded-full px-2 py-1 transition-colors">
+                Olá, {user?.name}!
+              </div>
+            )}
+
+            {/* User Menu */}
+            <div className="relative" ref={menuRef}>
+              {isLoggedIn ? (
+                <div>
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="p-2 hover:bg-secondary rounded-full transition-colors"
+                    title="Meu Perfil"
+                  >
+                    <User className="w-5 h-5 text-foreground" />
+                  </button>
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-56 bg-background border border-border rounded-lg shadow-lg py-1 z-50">
+                      <div className="px-4 py-2 border-b border-border">
+                        <p className="text-sm font-semibold">{user?.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {user?.email}
+                        </p>
+                      </div>
+                      <Link
+                        to="/profile"
+                        onClick={() => setShowUserMenu(false)}
+                        className="block px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                      >
+                        Meu Perfil
+                      </Link>
+                      {isProvider && (
+                        <Link
+                          to="/dashboard"
+                          onClick={() => setShowUserMenu(false)}
+                          className="block px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                        >
+                          Dashboard
+                        </Link>
+                      )}
+                      {isAdmin && (
+                        <>
+                          <div className="px-4 pt-2 pb-1 text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                            Administração
+                          </div>
+                          <Link
+                            to="/admin"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors text-primary font-semibold"
+                          >
+                            <LayoutDashboard className="w-4 h-4" />
+                            Dashboard
+                          </Link>
+                          <Link
+                            to="/admin/users"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                          >
+                            <Shield className="w-4 h-4" />
+                            Usuários
+                          </Link>
+                          <Link
+                            to="/admin/providers"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                          >
+                            <Shield className="w-4 h-4" />
+                            Prestadores
+                          </Link>
+                          <Link
+                            to="/admin/services"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                          >
+                            <Shield className="w-4 h-4" />
+                            Serviços
+                          </Link>
+                          <Link
+                            to="/admin/orders"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                          >
+                            <Shield className="w-4 h-4" />
+                            Pedidos
+                          </Link>
+                          <div className="h-px bg-border my-1" />
+                        </>
+                      )}
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          logout();
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors flex items-center gap-2 text-red-600"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sair
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => redirectToLogin()}
+                  className="p-2 hover:bg-secondary rounded-full transition-colors"
+                  title="Meu Perfil"
+                >
+                  <User className="w-5 h-5 text-foreground" />
+                </button>
+              )}
+            </div>
 
             <button className="p-2 hover:bg-secondary rounded-full transition-colors">
               <Heart className="w-5 h-5 text-foreground" />
@@ -68,5 +208,5 @@ export default function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

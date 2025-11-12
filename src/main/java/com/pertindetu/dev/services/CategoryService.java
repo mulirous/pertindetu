@@ -3,6 +3,8 @@ package com.pertindetu.dev.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.pertindetu.dev.exceptions.ResourceNotFoundException;
@@ -20,6 +22,10 @@ public class CategoryService {
 
   public List<Category> findAll() {
     return categoryRepository.findAll();
+  }
+
+  public Page<Category> findAll(Pageable pageable) {
+    return categoryRepository.findAll(pageable);
   }
 
   public Category findById(Long id) {
@@ -48,5 +54,10 @@ public class CategoryService {
   public void delete(Long id) {
     Category category = findById(id);
     categoryRepository.delete(category);
+  }
+
+  // Admin methods
+  public long count() {
+    return categoryRepository.count();
   }
 }

@@ -57,6 +57,14 @@ public class ProviderProfileController {
     return ResponseEntity.ok(new ProviderProfileResponseDTO(profile));
   }
 
+  @Operation(summary = "Get public provider profile by ID (for visitors)")
+  @ApiResponse(responseCode = "200", description = "Public profile retrieved")
+  @GetMapping("/{id}/public")
+  public ResponseEntity<ProviderProfileResponseDTO> getPublicProfile(@PathVariable Long id) {
+    ProviderProfile profile = providerProfileService.findById(id);
+    return ResponseEntity.ok(new ProviderProfileResponseDTO(profile));
+  }
+
   @Operation(summary = "Create a new provider profile")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Profile created successfully"),
