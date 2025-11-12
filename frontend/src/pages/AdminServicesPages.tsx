@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Loader2, Package, PlusCircle } from 'lucide-react'
-import { adminApi, type ServiceData } from '../api'
+import { adminApi, servicesApi, type ServiceData } from '../api'
 import { AdminLayout } from '../components/AdminLayout'
 import { Card } from '../components/ui/card'
 import { Button } from '../components/ui/button'
@@ -8,24 +8,22 @@ import { Button } from '../components/ui/button'
 export function AdminServicesPage() {
   const [services, setServices] = useState<ServiceData[]>([])
   const [isLoading, setIsLoading] = useState(true)
-
   useEffect(() => {
-    const loadServices = async () => {
-      setIsLoading(true)
-      try {
-        const data = await adminApi.services.getAll()
-        console.log('Serviços carregados:', data) // debug temporário
-        setServices(data)
-      } catch (error) {
-        console.error('Erro ao carregar serviços:', error)
-        alert('Erro ao carregar lista de serviços')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadServices()
+    loadData()
   }, [])
+
+  const loadData = async () => {
+    setIsLoading(true)
+    try {
+      // Buscar serviços mais recentes
+      const servicesData = await servicesApi.getPublic({}, 0, 8)
+      setServices(servicesData.content || [])
+    } catch (error) {
+      console.error('Erro ao carregar dados da homepage:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   if (isLoading) {
     return (
