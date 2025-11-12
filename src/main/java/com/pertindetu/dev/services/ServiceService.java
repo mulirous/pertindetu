@@ -34,14 +34,14 @@ public class ServiceService {
   }
 
   public Page<Service> findByFilters(
-      Long categoryId, 
-      Long providerId, 
-      BigDecimal minPrice, 
-      BigDecimal maxPrice, 
-      String search, 
+      Long categoryId,
+      Long providerId,
+      BigDecimal minPrice,
+      BigDecimal maxPrice,
+      String search,
       Pageable pageable) {
     if (search != null && !(search instanceof String)) {
-        search = new String(search.toString()); // fallback seguro
+      search = new String(search.toString()); // fallback seguro
     }
     return serviceRepository.findByFilters(categoryId, providerId, minPrice, maxPrice, search, pageable);
   }
@@ -75,7 +75,12 @@ public class ServiceService {
     service.setAvgDuration(dto.avgDuration());
     service.setProvider(provider);
     service.setCategory(category);
-    service.setUpdatedAt(java.time.Instant.now());
+
+    // ⬇️⬇️ A CORREÇÃO ESTÁ AQUI ⬇️⬇️
+    java.time.Instant now = java.time.Instant.now();
+    service.setCreatedAt(now); // <-- VOCÊ ESQUECEU ESTA LINHA
+    service.setUpdatedAt(now); // <-- Esta linha já estava (correta)
+    // ⬆️⬆️ FIM DA CORREÇÃO ⬆️⬆️
 
     return serviceRepository.save(service);
   }
