@@ -42,6 +42,18 @@ export function OrderForm({
 
     setIsSubmitting(true);
     try {
+      let eventDateValue: number | undefined = undefined;
+
+      if (formData.eventDate) {
+        const ms = Date.parse(formData.eventDate);
+        if (Number.isNaN(ms)) {
+          alert("Data do evento inválida.");
+          setIsSubmitting(false);
+          return;
+        }
+        eventDateValue = ms;
+      }
+
       const orderData: OrderCreateData = {
         serviceId,
         clientId: user.id,
@@ -49,7 +61,7 @@ export function OrderForm({
         quantity: formData.quantity,
         value: basePrice,
         details: formData.details || undefined,
-        eventDate: formData.eventDate || undefined,
+        eventDate: eventDateValue,
       };
 
       await ordersApi.create(orderData);
@@ -154,8 +166,7 @@ export function OrderForm({
                 variant="outline"
                 onClick={onCancel}
                 disabled={isSubmitting}
-                className="flex-1"
-              >
+                className="flex-1">
                 Cancelar
               </Button>
             )}

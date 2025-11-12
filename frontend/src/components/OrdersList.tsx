@@ -58,7 +58,10 @@ export function OrdersList({
             userRole={userRole}
             onUpdateStatus={onUpdateStatus}
             onCancel={onCancel}
-            onViewDetails={onViewDetails}
+            onViewDetails={(orderId) => {
+              console.log("📤 OrdersList propagando onViewDetails:", orderId);
+              onViewDetails?.(orderId);
+            }}
           />
         ))}
       </div>
@@ -76,8 +79,7 @@ export function OrdersList({
               variant="outline"
               size="sm"
               onClick={() => onPageChange?.(currentPage - 1)}
-              disabled={!hasPreviousPage}
-            >
+              disabled={!hasPreviousPage}>
               <ChevronLeft className="w-4 h-4 mr-1" />
               Anterior
             </Button>
@@ -86,8 +88,7 @@ export function OrdersList({
               variant="outline"
               size="sm"
               onClick={() => onPageChange?.(currentPage + 1)}
-              disabled={!hasNextPage}
-            >
+              disabled={!hasNextPage}>
               Próxima
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>

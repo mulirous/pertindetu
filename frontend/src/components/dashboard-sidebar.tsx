@@ -1,5 +1,6 @@
-import { Card } from "@/components/ui/card"
-import { Star } from "lucide-react"
+import { Card } from "@/components/ui/card";
+import { Star, ShoppingBag, MessageSquare } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function DashboardSidebar() {
   const user = {
@@ -8,13 +9,13 @@ export function DashboardSidebar() {
     avgRating: 4.8,
     totalReviews: 109,
     description: "Há uma hora",
-  }
+  };
 
   const verifications = [
     { label: "Email", status: "Verificado" as const },
     { label: "Membro desde", status: "Verificado" as const },
     { label: "Membro desde", status: "Pendente" as const },
-  ]
+  ];
 
   return (
     <div className="space-y-4">
@@ -25,7 +26,9 @@ export function DashboardSidebar() {
             <span className="text-4xl">👤</span>
           </div>
 
-          <h2 className="text-xl font-semibold text-neutral-900">{user.name}</h2>
+          <h2 className="text-xl font-semibold text-neutral-900">
+            {user.name}
+          </h2>
 
           <div className="mt-4 space-y-2 text-sm text-neutral-600">
             <p>
@@ -40,11 +43,17 @@ export function DashboardSidebar() {
                   <Star
                     key={i}
                     size={16}
-                    className={i < Math.floor(user.avgRating) ? "fill-amber-400 text-amber-400" : "text-neutral-300"}
+                    className={
+                      i < Math.floor(user.avgRating)
+                        ? "fill-amber-400 text-amber-400"
+                        : "text-neutral-300"
+                    }
                   />
                 ))}
               </div>
-              <span className="font-semibold text-neutral-900">{user.avgRating}</span>
+              <span className="font-semibold text-neutral-900">
+                {user.avgRating}
+              </span>
             </div>
 
             <p>
@@ -68,11 +77,16 @@ export function DashboardSidebar() {
 
         <div className="space-y-3">
           {verifications.map((item, idx) => (
-            <div key={idx} className="flex items-center justify-between py-2 border-b border-neutral-200 last:border-0">
+            <div
+              key={idx}
+              className="flex items-center justify-between py-2 border-b border-neutral-200 last:border-0">
               <span className="text-sm text-neutral-600">{item.label}</span>
               <span
-                className={`text-sm font-medium ${item.status === "Verificado" ? "text-green-600" : "text-amber-600"}`}
-              >
+                className={`text-sm font-medium ${
+                  item.status === "Verificado"
+                    ? "text-green-600"
+                    : "text-amber-600"
+                }`}>
                 {item.status}
               </span>
             </div>
@@ -83,6 +97,37 @@ export function DashboardSidebar() {
           Editar
         </button>
       </Card>
+
+      {/* Quick Actions Card */}
+      <Card className="p-6">
+        <h3 className="font-semibold text-neutral-900 mb-4">Ações Rápidas</h3>
+
+        <div className="space-y-2">
+          <Link
+            to="/provider/orders"
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-100 transition-colors group">
+            <div className="p-2 bg-blue-100 text-blue-600 rounded-lg group-hover:bg-blue-200 transition-colors">
+              <ShoppingBag className="w-5 h-5" />
+            </div>
+            <div className="flex-1">
+              <p className="font-medium text-neutral-900">Pedidos Recebidos</p>
+              <p className="text-xs text-neutral-600">Gerencie seus pedidos</p>
+            </div>
+          </Link>
+
+          <Link
+            to="/provider/reviews"
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-100 transition-colors group">
+            <div className="p-2 bg-amber-100 text-amber-600 rounded-lg group-hover:bg-amber-200 transition-colors">
+              <MessageSquare className="w-5 h-5" />
+            </div>
+            <div className="flex-1">
+              <p className="font-medium text-neutral-900">Avaliações</p>
+              <p className="text-xs text-neutral-600">Veja suas avaliações</p>
+            </div>
+          </Link>
+        </div>
+      </Card>
     </div>
-  )
+  );
 }

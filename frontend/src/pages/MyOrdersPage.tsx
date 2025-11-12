@@ -9,6 +9,8 @@ import {
   TabsTrigger,
   TabsContent,
 } from "../components/ui/tabs";
+import Header from "../components/header";
+import Footer from "../components/footer";
 
 export function MyOrdersPage() {
   const { user } = useAuth();
@@ -75,45 +77,53 @@ export function MyOrdersPage() {
 
   if (!user) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <p className="text-center text-muted-foreground">
-          Você precisa estar logado para ver seus pedidos.
-        </p>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <p className="text-center text-muted-foreground">
+            Você precisa estar logado para ver seus pedidos.
+          </p>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Meus Pedidos</h1>
-        <p className="text-muted-foreground">
-          Acompanhe o status dos seus pedidos de serviços
-        </p>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Meus Pedidos</h1>
+          <p className="text-muted-foreground">
+            Acompanhe o status dos seus pedidos de serviços
+          </p>
+        </div>
+
+        <Tabs value={statusFilter} onValueChange={handleStatusFilterChange}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="ALL">Todos</TabsTrigger>
+            <TabsTrigger value="PENDING">Pendentes</TabsTrigger>
+            <TabsTrigger value="ACCEPTED">Aceitos</TabsTrigger>
+            <TabsTrigger value="IN_PROGRESS">Em Andamento</TabsTrigger>
+            <TabsTrigger value="COMPLETED">Concluídos</TabsTrigger>
+            <TabsTrigger value="CANCELLED">Cancelados</TabsTrigger>
+            <TabsTrigger value="REJECTED">Rejeitados</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value={statusFilter}>
+            <OrdersList
+              orders={orders}
+              userRole="client"
+              isLoading={isLoading}
+              onCancel={handleCancelOrder}
+              onViewDetails={handleViewDetails}
+              onPageChange={handlePageChange}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
-
-      <Tabs value={statusFilter} onValueChange={handleStatusFilterChange}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="ALL">Todos</TabsTrigger>
-          <TabsTrigger value="PENDING">Pendentes</TabsTrigger>
-          <TabsTrigger value="ACCEPTED">Aceitos</TabsTrigger>
-          <TabsTrigger value="IN_PROGRESS">Em Andamento</TabsTrigger>
-          <TabsTrigger value="COMPLETED">Concluídos</TabsTrigger>
-          <TabsTrigger value="CANCELLED">Cancelados</TabsTrigger>
-          <TabsTrigger value="REJECTED">Rejeitados</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value={statusFilter}>
-          <OrdersList
-            orders={orders}
-            userRole="client"
-            isLoading={isLoading}
-            onCancel={handleCancelOrder}
-            onViewDetails={handleViewDetails}
-            onPageChange={handlePageChange}
-          />
-        </TabsContent>
-      </Tabs>
+      <Footer />
     </div>
   );
 }
