@@ -763,45 +763,6 @@ VITE_API_URL=https://api.pertindetu.com
 - [ ] Backup automático do banco
 - [ ] Monitoramento e logs
 
----
-
-## 📈 Melhorias Futuras
-
-### Backend
-
-- [ ] Implementar Spring Security com JWT
-- [ ] Adicionar paginação em todos endpoints de listagem
-- [ ] Sistema de notificações (email/SMS)
-- [ ] Websockets para chat entre cliente e prestador
-- [ ] Sistema de favoritos
-- [ ] Busca geolocalizada (nearby services)
-- [ ] Integração com gateway de pagamento
-- [ ] Sistema de disputas/mediação
-
-### Frontend
-
-- [ ] PWA (Progressive Web App)
-- [ ] Dark mode
-- [ ] Internacionalização (i18n)
-- [ ] Otimização de imagens (lazy loading)
-- [ ] Skeleton loaders
-- [ ] Testes E2E com Playwright
-- [ ] Acessibilidade (WCAG 2.1)
-- [ ] Analytics e métricas
-
-### Admin
-
-- [ ] Completar páginas de gerenciamento (Users, Providers, Services, Orders)
-- [ ] Dashboard com gráficos (Chart.js/Recharts)
-- [ ] Exportação de relatórios (CSV/PDF)
-- [ ] Logs de atividades
-- [ ] Sistema de permissões granulares
-
----
-
-## 👥 Contribuindo
-
-Este é um projeto acadêmico, mas contribuições são bem-vindas!
 
 ### Como Contribuir
 
@@ -834,23 +795,13 @@ Este projeto foi desenvolvido para fins acadêmicos como parte da disciplina de 
 
 ---
 
-## 👨‍💻 Autor
+## 👨‍💻 Autores
 
-Desenvolvido por **Murilo Rousano** como projeto de avaliação acadêmica.
+Desenvolvido por **Eduardo Santos, João Victor Saraiva, Murilo Costa e Luigi Peixoto** como projeto de avaliação acadêmica.
 
-- 🐙 GitHub: [@mulirous](https://github.com/mulirous)
+
 - 📂 Repositório: [pertindetu](https://github.com/mulirous/pertindetu)
 
 ---
 
-## � Agradecimentos
 
-- Professores e colegas da disciplina de Desenvolvimento Web 2
-- Comunidades Spring Boot e React
-- Contribuidores de bibliotecas open-source utilizadas
-
----
-
-<p align="center">
-  Feito com ❤️ e ☕ por Murilo Rousano
-</p>
