@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
-import { AdminLayout } from "../components/AdminLayout";
-import { Card } from "../components/ui/card";
-import { adminApi, type AdminStats } from "../api";
 import {
-  Users,
   Briefcase,
-  Package,
-  ShoppingCart,
   CheckCircle,
   Clock,
-  TrendingUp,
   Loader2,
+  Package,
+  ShoppingCart,
+  TrendingUp,
+  Users,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { adminApi, type AdminStats } from "../api";
+import { AdminLayout } from "../components/AdminLayout";
+import { Card } from "../components/ui/card";
 
 export function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);

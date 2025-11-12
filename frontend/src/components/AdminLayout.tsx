@@ -1,10 +1,10 @@
+import { AlertTriangle, Home, LogOut } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
-import { AdminSidebar } from "./admin-sidebar";
-import { Button } from "./ui/button";
-import { LogOut, Home, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { AdminSidebar } from "./admin-sidebar";
+import { Button } from "./ui/button";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -19,6 +19,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       alert("Acesso negado! Você precisa ser administrador.");
       navigate("/");
     }
+    
   }, [user, isAdmin, navigate]);
 
   const handleLogout = () => {
@@ -26,7 +27,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     navigate("/");
   };
 
-  // Exibir loading enquanto carrega os dados do usuário
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -35,7 +35,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     );
   }
 
-  // Exibir erro se não for admin
   if (!isAdmin) {
     return (
       <div className="flex items-center justify-center min-h-screen">

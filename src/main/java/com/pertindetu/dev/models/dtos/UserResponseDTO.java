@@ -9,6 +9,7 @@ public record UserResponseDTO(
     String name,
     String email,
     String cellphoneNumber,
+    boolean isAdmin,
     Instant dateCreation,
     boolean active) {
   public UserResponseDTO(User user) {
@@ -17,6 +18,7 @@ public record UserResponseDTO(
         user.getName(),
         user.getEmail(),
         user.getCellphoneNumber(),
+        user.isAdmin(),
         user.getDateCreation(),
         user.isActive());
   }

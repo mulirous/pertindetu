@@ -1,24 +1,24 @@
 import {
   Heart,
+  LayoutDashboard,
+  LogOut,
   Search,
+  Shield,
   ShoppingCart,
   User,
-  LogOut,
-  Shield,
-  LayoutDashboard,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const { isLoggedIn, user, logout, isAdmin } = useAuth();
+  const { isLoggedIn, user, logout, isAdmin, isProvider } = useAuth();
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  // Fechar menu ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -105,13 +105,15 @@ export default function Header() {
                       >
                         Meu Perfil
                       </Link>
-                      <Link
-                        to="/dashboard"
-                        onClick={() => setShowUserMenu(false)}
-                        className="block px-4 py-2 text-sm hover:bg-secondary transition-colors"
-                      >
-                        Dashboard
-                      </Link>
+                      {isProvider && (
+                        <Link
+                          to="/dashboard"
+                          onClick={() => setShowUserMenu(false)}
+                          className="block px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                        >
+                          Dashboard
+                        </Link>
+                      )}
                       {isAdmin && (
                         <>
                           <div className="px-4 pt-2 pb-1 text-[10px] uppercase tracking-wide text-muted-foreground font-medium">

@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authApi, userApi, providerApi } from "../api";
-import type { UserData, ProviderProfileData } from "../api";
+import type { ProviderProfileData, UserData } from "../api";
+import { authApi, providerApi, userApi } from "../api";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -28,22 +28,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Carregar dados do usuário
+  useEffect(() => {
+    console.log("User atualizado:", user);
+  }, [user]);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setUserId(parsedUser.id);
+        setIsLoggedIn(true);
+      } catch (err) {
+        console.error("Erro ao restaurar usuário do localStorage:", err);
+        localStorage.removeItem("user");
+      }
+    }
+  }, []);
+
   const loadUserData = async () => {
     if (!userId) return;
-
     try {
       const userData = await userApi.getById(userId);
       setUser(userData.data);
+      localStorage.setItem("user", JSON.stringify(userData.data));
     } catch (err: any) {
       console.error("Erro ao carregar dados do usuário:", err);
     }
   };
 
-  // Carregar dados do provider
   const refreshProvider = async () => {
     if (!userId) return;
-
     try {
       const providerData = await providerApi.getByUserId(userId);
       setProvider(providerData);
@@ -53,7 +69,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar dados quando o userId mudar
   useEffect(() => {
     if (userId) {
       loadUserData();
@@ -69,7 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoggedIn(true);
         setUserId(response.userId);
         setError(null);
+
+        await loadUserData();
+
         navigate("/");
+        console.log(`Login bem-sucedido. Novo userId: ${response.userId}`);
       } else {
         setError(response.message || "Erro ao fazer login");
       }
@@ -79,12 +98,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
+    localStorage.removeItem("user");
+    localStorage.clear();
     setIsLoggedIn(false);
     setUserId(null);
     setUser(null);
     setProvider(null);
     setError(null);
-    navigate("/login");
+    navigate("/");
   };
 
   const value = {
