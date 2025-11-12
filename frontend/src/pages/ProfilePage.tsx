@@ -30,7 +30,8 @@ export default function ProfilePage() {
     setLoadingServices(true);
     try {
       const response = await servicesApi.getByProviderId(provider.id);
-      setServices(response.data.content);
+      console.log(response);
+      setServices(response.content);
     } catch (error) {
       console.error("Erro ao carregar serviços:", error);
     } finally {
@@ -86,8 +87,7 @@ export default function ProfilePage() {
                             user.active
                               ? "bg-blue-100 text-blue-800"
                               : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
+                          }`}>
                           {user.active ? "Ativo" : "Inativo"}
                         </span>
                       </div>
@@ -96,8 +96,7 @@ export default function ProfilePage() {
 
                   <button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="px-4 py-2 border-2 border-border rounded-lg hover:bg-secondary transition-colors"
-                  >
+                    className="px-4 py-2 border-2 border-border rounded-lg hover:bg-secondary transition-colors">
                     {isEditing ? "Cancelar" : "Editar Perfil"}
                   </button>
                 </div>
@@ -149,8 +148,7 @@ export default function ProfilePage() {
                           {provider.categories.map((cat) => (
                             <span
                               key={cat.id}
-                              className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
-                            >
+                              className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
                               {cat.name}
                             </span>
                           ))}
@@ -165,8 +163,7 @@ export default function ProfilePage() {
                       <h2 className="text-2xl font-bold">Meus Serviços</h2>
                       <button
                         onClick={() => navigate("/services/new")}
-                        className="flex items-center space-x-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
-                      >
+                        className="flex items-center space-x-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
                         <Plus className="w-4 h-4" />
                         <span>Novo Serviço</span>
                       </button>
@@ -183,8 +180,7 @@ export default function ProfilePage() {
                         </p>
                         <button
                           onClick={() => navigate("/services/new")}
-                          className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
-                        >
+                          className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
                           Criar Primeiro Serviço
                         </button>
                       </div>
@@ -193,8 +189,7 @@ export default function ProfilePage() {
                         {services.map((service) => (
                           <div
                             key={service.id}
-                            className="border-2 border-border rounded-lg p-4 hover:border-primary transition-colors"
-                          >
+                            className="border-2 border-border rounded-lg p-4 hover:border-primary transition-colors">
                             {service.media && service.media.length > 0 && (
                               <img
                                 src={service.media[0].mediaUrl}
@@ -222,8 +217,7 @@ export default function ProfilePage() {
                                   service.active
                                     ? "bg-green-100 text-green-800"
                                     : "bg-gray-100 text-gray-800"
-                                }`}
-                              >
+                                }`}>
                                 {service.active ? "Ativo" : "Inativo"}
                               </span>
                             </div>
@@ -250,8 +244,7 @@ export default function ProfilePage() {
                   </p>
                   <button
                     onClick={() => setShowProviderForm(!showProviderForm)}
-                    className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg transition-colors"
-                  >
+                    className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg transition-colors">
                     {showProviderForm ? "Cancelar" : "Quero ser Prestador"}
                   </button>
                 </div>
