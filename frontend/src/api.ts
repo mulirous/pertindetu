@@ -9,6 +9,21 @@ export const api = axios.create({
   },
   withCredentials: true, // Importante para CORS com credenciais
 });
+
+// Interceptor para adicionar o token JWT em todas as requisições
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 const MOCK_USER = {
   userId: 1,
 
@@ -24,9 +39,8 @@ export const getMockProviderId = () => {
 };
 
 export interface LoginResponse {
-  statusCode: number;
-  message: string;
-  userId?: number;
+  token: string;
+  userId: number;
 }
 
 export interface RegisterResponse {
@@ -36,6 +50,8 @@ export interface RegisterResponse {
 }
 
 // User interfaces
+export type UserRole = "ADMIN" | "CLIENT" | "PROVIDER";
+
 export interface UserData {
   id: number;
   name: string;
@@ -43,7 +59,7 @@ export interface UserData {
   cellphoneNumber: string;
   dateCreation: string;
   active: boolean;
-  isAdmin: boolean;
+  role: UserRole;
 }
 
 export interface ApiResponse<T> {
@@ -122,6 +138,7 @@ export const authApi = {
       email: string;
       password: string;
       cellphoneNumber: string;
+      role: "CLIENT" | "PROVIDER" | "ADMIN";
     };
     address: {
       street: string;
@@ -153,6 +170,13 @@ export const userApi = {
     const response = await api.put<ApiResponse<UserData>>(
       `/users/${id}`,
       userData
+    );
+    return response.data;
+  },
+
+  becomeProvider: async (id: number) => {
+    const response = await api.patch<ApiResponse<UserData>>(
+      `/users/${id}/become-provider`
     );
     return response.data;
   },
