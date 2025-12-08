@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pertindetu.dev.models.ProviderProfile;
+import com.pertindetu.dev.models.dtos.ProviderProfileResponseDTO;
 import com.pertindetu.dev.services.ProviderProfileService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +25,7 @@ public class AdminProviderController {
 
     @Operation(summary = "Listar todos os prestadores", description = "Retorna lista paginada de todos os prestadores")
     @GetMapping
-    public ResponseEntity<Page<ProviderProfile>> getAllProviders(
+    public ResponseEntity<Page<ProviderProfileResponseDTO>> getAllProviders(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -34,21 +35,22 @@ public class AdminProviderController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
         
         Page<ProviderProfile> providers = providerProfileService.findAll(pageable);
-        return ResponseEntity.ok(providers);
+        Page<ProviderProfileResponseDTO> dtoPage = providers.map(ProviderProfileResponseDTO::new);
+        return ResponseEntity.ok(dtoPage);
     }
 
     @Operation(summary = "Buscar prestador por ID", description = "Retorna detalhes de um prestador específico")
     @GetMapping("/{id}")
-    public ResponseEntity<ProviderProfile> getProviderById(@PathVariable Long id) {
+    public ResponseEntity<ProviderProfileResponseDTO> getProviderById(@PathVariable Long id) {
         ProviderProfile provider = providerProfileService.findById(id);
-        return ResponseEntity.ok(provider);
+        return ResponseEntity.ok(new ProviderProfileResponseDTO(provider));
     }
 
     @Operation(summary = "Verificar/Desverificar prestador", description = "Alterna o status de verificação de um prestador")
     @PatchMapping("/{id}/toggle-verification")
-    public ResponseEntity<ProviderProfile> toggleVerification(@PathVariable Long id) {
+    public ResponseEntity<ProviderProfileResponseDTO> toggleVerification(@PathVariable Long id) {
         ProviderProfile updatedProvider = providerProfileService.toggleVerification(id);
-        return ResponseEntity.ok(updatedProvider);
+        return ResponseEntity.ok(new ProviderProfileResponseDTO(updatedProvider));
     }
 
     @Operation(summary = "Excluir prestador", description = "Remove permanentemente um prestador do sistema")

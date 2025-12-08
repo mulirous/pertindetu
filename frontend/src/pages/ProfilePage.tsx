@@ -8,10 +8,23 @@ import type { ServiceData } from "../api";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import { ProviderForm } from "../components/ProviderForm";
-import { User, Mail, Phone, Calendar, Badge, Plus } from "lucide-react";
+import {
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  Badge,
+  Plus,
+  Shield,
+  Users,
+  Briefcase,
+  Settings,
+  Package,
+  Star,
+} from "lucide-react";
 
 export default function ProfilePage() {
-  const { user, provider, isProvider, isLoggedIn } = useAuth();
+  const { user, provider, isProvider, isAdmin, isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const [showProviderForm, setShowProviderForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -95,6 +108,12 @@ export default function ProfilePage() {
                     <div>
                       <h1 className="text-3xl font-bold">{user.name}</h1>
                       <div className="flex items-center space-x-2 mt-1">
+                        {isAdmin && (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            <Shield className="w-3 h-3 mr-1" />
+                            Administrador
+                          </span>
+                        )}
                         {isProvider && (
                           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                             <Badge className="w-3 h-3 mr-1" />
@@ -106,7 +125,8 @@ export default function ProfilePage() {
                             user.active
                               ? "bg-blue-100 text-blue-800"
                               : "bg-gray-100 text-gray-800"
-                          }`}>
+                          }`}
+                        >
                           {user.active ? "Ativo" : "Inativo"}
                         </span>
                       </div>
@@ -115,7 +135,8 @@ export default function ProfilePage() {
 
                   <button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="px-4 py-2 border-2 border-border rounded-lg hover:bg-secondary transition-colors">
+                    className="px-4 py-2 border-2 border-border rounded-lg hover:bg-secondary transition-colors"
+                  >
                     {isEditing ? "Cancelar" : "Editar Perfil"}
                   </button>
                 </div>
@@ -167,7 +188,8 @@ export default function ProfilePage() {
                           {provider.categories.map((cat) => (
                             <span
                               key={cat.id}
-                              className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
+                              className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+                            >
                               {cat.name}
                             </span>
                           ))}
@@ -182,7 +204,8 @@ export default function ProfilePage() {
                       <h2 className="text-2xl font-bold">Meus Serviços</h2>
                       <button
                         onClick={() => navigate("/services/new")}
-                        className="flex items-center space-x-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
+                        className="flex items-center space-x-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
+                      >
                         <Plus className="w-4 h-4" />
                         <span>Novo Serviço</span>
                       </button>
@@ -199,7 +222,8 @@ export default function ProfilePage() {
                         </p>
                         <button
                           onClick={() => navigate("/services/new")}
-                          className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors">
+                          className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
+                        >
                           Criar Primeiro Serviço
                         </button>
                       </div>
@@ -208,7 +232,8 @@ export default function ProfilePage() {
                         {services.map((service: any) => (
                           <div
                             key={service.id}
-                            className="border-2 border-border rounded-lg p-4 hover:border-primary transition-colors">
+                            className="border-2 border-border rounded-lg p-4 hover:border-primary transition-colors"
+                          >
                             {service.media && service.media.length > 0 && (
                               <img
                                 src={service.media[0].mediaUrl}
@@ -236,7 +261,8 @@ export default function ProfilePage() {
                                   service.active
                                     ? "bg-green-100 text-green-800"
                                     : "bg-gray-100 text-gray-800"
-                                }`}>
+                                }`}
+                              >
                                 {service.active ? "Ativo" : "Inativo"}
                               </span>
                             </div>
@@ -251,8 +277,62 @@ export default function ProfilePage() {
 
             {/* Right Column - Actions */}
             <div className="space-y-6">
+              {/* Admin Panel Card */}
+              {isAdmin && (
+                <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-2 border-purple-300 rounded-lg p-6">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Shield className="w-6 h-6 text-purple-600" />
+                    <h3 className="text-xl font-bold text-purple-800">
+                      Painel Admin
+                    </h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Acesse as ferramentas de administração da plataforma.
+                  </p>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => navigate("/admin")}
+                      className="w-full flex items-center justify-center space-x-2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition-colors"
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span>Dashboard Admin</span>
+                    </button>
+                    <div className="grid grid-cols-2 gap-2 mt-3">
+                      <button
+                        onClick={() => navigate("/admin/users")}
+                        className="flex items-center justify-center space-x-1 px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition-colors text-sm"
+                      >
+                        <Users className="w-4 h-4" />
+                        <span>Usuários</span>
+                      </button>
+                      <button
+                        onClick={() => navigate("/admin/providers")}
+                        className="flex items-center justify-center space-x-1 px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition-colors text-sm"
+                      >
+                        <Briefcase className="w-4 h-4" />
+                        <span>Prestadores</span>
+                      </button>
+                      <button
+                        onClick={() => navigate("/admin/services")}
+                        className="flex items-center justify-center space-x-1 px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition-colors text-sm"
+                      >
+                        <Package className="w-4 h-4" />
+                        <span>Serviços</span>
+                      </button>
+                      <button
+                        onClick={() => navigate("/admin/categories")}
+                        className="flex items-center justify-center space-x-1 px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition-colors text-sm"
+                      >
+                        <Star className="w-4 h-4" />
+                        <span>Categorias</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Become Provider Card */}
-              {!isProvider && (
+              {!isProvider && !isAdmin && (
                 <div className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 rounded-lg p-6">
                   <h3 className="text-xl font-bold mb-3">
                     Torne-se um Prestador
@@ -263,14 +343,15 @@ export default function ProfilePage() {
                   </p>
                   <button
                     onClick={() => setShowProviderForm(!showProviderForm)}
-                    className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg transition-colors">
+                    className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg transition-colors"
+                  >
                     {showProviderForm ? "Cancelar" : "Quero ser Prestador"}
                   </button>
                 </div>
               )}
 
               {/* Provider Form */}
-              {showProviderForm && !isProvider && (
+              {showProviderForm && !isProvider && !isAdmin && (
                 <div className="bg-card border-2 border-border rounded-lg p-6">
                   <ProviderForm />
                 </div>

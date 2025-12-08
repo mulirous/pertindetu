@@ -43,6 +43,9 @@ public class SecurityConfigurations {
                     // Libera Swagger
                     req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
 
+                    // Endpoints de Administrador (Exige ROLE_ADMIN)
+                    req.requestMatchers("/admin/**").hasRole("ADMIN");
+
                     // Exige autenticação para o resto
                     req.anyRequest().authenticated();
                 })

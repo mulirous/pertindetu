@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { providerApi, categoriesApi } from "../api";
+import { providerApi, categoriesApi, userApi } from "../api";
 import type { CategoryData } from "../api";
 import { useAuth } from "../context/AuthContext";
 
 export function ProviderForm() {
-  const { userId, refreshProvider } = useAuth();
+  const { userId, refreshProvider, loadUserData } = useAuth();
   const [bio, setBio] = useState("");
   const [pixKey, setPixKey] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
@@ -62,12 +62,19 @@ export function ProviderForm() {
     };
 
     try {
+      // 1. Primeiro, transforma o usuário em PROVIDER
+      await userApi.becomeProvider(userId);
+
+      // 2. Atualiza os dados do usuário no contexto (para refletir a nova role)
+      await loadUserData();
+
+      // 3. Cria o perfil de prestador
       await providerApi.create(providerData);
 
-      // Atualizar o provider no context
+      // 4. Atualiza o provider no contexto
       await refreshProvider();
 
-      // Redirecionar para o perfil
+      // 5. Redirecionar para o perfil
       navigate("/profile");
     } catch (err: any) {
       console.error("Erro ao criar prestador:", err);

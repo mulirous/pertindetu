@@ -34,7 +34,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
+    const token = localStorage.getItem("token");
+
+    if (storedUser && token) {
       try {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
@@ -43,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (err) {
         console.error("Erro ao restaurar usuário do localStorage:", err);
         localStorage.removeItem("user");
+        localStorage.removeItem("token");
       }
     }
   }, []);
@@ -80,7 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authApi.login(email, password);
 
-      if (response.statusCode === 200 && response.userId) {
+      if (response.token && response.userId) {
+        localStorage.setItem("token", response.token);
         setIsLoggedIn(true);
         setUserId(response.userId);
         setError(null);
@@ -90,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         navigate("/");
         console.log(`Login bem-sucedido. Novo userId: ${response.userId}`);
       } else {
-        setError(response.message || "Erro ao fazer login");
+        setError("Erro ao fazer login: Resposta inválida");
       }
     } catch (err: any) {
       setError(err.response?.data?.message || "Erro ao fazer login");
@@ -99,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     localStorage.removeItem("user");
-    localStorage.clear();
+    localStorage.removeItem("token");
     setIsLoggedIn(false);
     setUserId(null);
     setUser(null);
@@ -113,8 +117,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userId,
     user,
     provider,
-    isProvider: !!provider,
-    isAdmin: user?.isAdmin || false,
+    isProvider: !!provider || user?.role === "PROVIDER",
+    isAdmin: user?.role === "ADMIN",
     login,
     logout,
     error,

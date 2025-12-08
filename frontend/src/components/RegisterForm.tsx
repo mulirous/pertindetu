@@ -59,8 +59,30 @@ export function RegisterForm() {
     e.preventDefault();
     setError(null);
 
+    // Validações
     if (formData.user.password !== formData.user.confirmPassword) {
       setError("As senhas não conferem.");
+      return;
+    }
+
+    if (formData.user.password.length < 4) {
+      setError("A senha deve ter pelo menos 4 caracteres.");
+      return;
+    }
+
+    if (formData.address.number <= 0) {
+      setError("O número do endereço deve ser maior que zero.");
+      return;
+    }
+
+    const cepLimpo = formData.address.postalCode.replace(/\D/g, "");
+    if (cepLimpo.length !== 8) {
+      setError("O CEP deve ter exatamente 8 dígitos.");
+      return;
+    }
+
+    if (formData.address.federativeUnit.length !== 2) {
+      setError("A UF deve ter exatamente 2 caracteres.");
       return;
     }
 
@@ -71,10 +93,13 @@ export function RegisterForm() {
           email: formData.user.email,
           password: formData.user.password,
           cellphoneNumber: formData.user.cellphoneNumber,
+          role: "CLIENT",
         },
         address: {
           ...formData.address,
           number: Number(formData.address.number),
+          postalCode: cepLimpo,
+          federativeUnit: formData.address.federativeUnit.toUpperCase(),
         },
       });
 

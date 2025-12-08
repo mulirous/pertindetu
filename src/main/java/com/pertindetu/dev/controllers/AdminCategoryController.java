@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.pertindetu.dev.models.Category;
 import com.pertindetu.dev.models.dtos.CategoryRequestDTO;
+import com.pertindetu.dev.models.dtos.CategoryResponseDTO;
 import com.pertindetu.dev.services.CategoryService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ public class AdminCategoryController {
 
     @Operation(summary = "Listar todas as categorias", description = "Retorna lista paginada de todas as categorias")
     @GetMapping
-    public ResponseEntity<Page<Category>> getAllCategories(
+    public ResponseEntity<Page<CategoryResponseDTO>> getAllCategories(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String sortBy,
@@ -37,30 +38,31 @@ public class AdminCategoryController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
         
         Page<Category> categories = categoryService.findAll(pageable);
-        return ResponseEntity.ok(categories);
+        Page<CategoryResponseDTO> dtoPage = categories.map(CategoryResponseDTO::new);
+        return ResponseEntity.ok(dtoPage);
     }
 
     @Operation(summary = "Buscar categoria por ID", description = "Retorna detalhes de uma categoria específica")
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id) {
         Category category = categoryService.findById(id);
-        return ResponseEntity.ok(category);
+        return ResponseEntity.ok(new CategoryResponseDTO(category));
     }
 
     @Operation(summary = "Criar nova categoria", description = "Cria uma nova categoria no sistema")
     @PostMapping
-    public ResponseEntity<Category> createCategory(@Valid @RequestBody CategoryRequestDTO dto) {
+    public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody CategoryRequestDTO dto) {
         Category newCategory = categoryService.save(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newCategory);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CategoryResponseDTO(newCategory));
     }
 
     @Operation(summary = "Atualizar categoria", description = "Atualiza os dados de uma categoria existente")
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(
+    public ResponseEntity<CategoryResponseDTO> updateCategory(
             @PathVariable Long id,
             @Valid @RequestBody CategoryRequestDTO dto) {
         Category updatedCategory = categoryService.update(id, dto);
-        return ResponseEntity.ok(updatedCategory);
+        return ResponseEntity.ok(new CategoryResponseDTO(updatedCategory));
     }
 
     @Operation(summary = "Excluir categoria", description = "Remove permanentemente uma categoria do sistema")

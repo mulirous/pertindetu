@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { ordersApi, type OrderStatus, type OrdersPageData } from "../api";
+import {
+  ordersApi,
+  type OrderStatus,
+  type OrdersPageData,
+  type OrderData,
+} from "../api";
 import { OrdersList } from "../components/OrdersList";
+import { OrderDetailsModal } from "../components/OrderDetailsModal";
 import {
   Tabs,
   TabsList,
@@ -14,11 +19,11 @@ import Footer from "../components/footer";
 
 export function MyOrdersPage() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [orders, setOrders] = useState<OrdersPageData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
+  const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
 
   const loadOrders = async (page = 0, status: OrderStatus | "ALL" = "ALL") => {
     if (!user) return;
@@ -62,7 +67,10 @@ export function MyOrdersPage() {
   };
 
   const handleViewDetails = (orderId: number) => {
-    navigate(`/orders/${orderId}`);
+    const order = orders?.content.find((o) => o.id === orderId);
+    if (order) {
+      setSelectedOrder(order);
+    }
   };
 
   const handlePageChange = (page: number) => {
@@ -123,6 +131,16 @@ export function MyOrdersPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Modal de Detalhes do Pedido */}
+      {selectedOrder && (
+        <OrderDetailsModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          userRole="client"
+        />
+      )}
+
       <Footer />
     </div>
   );

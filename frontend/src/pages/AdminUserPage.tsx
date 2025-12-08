@@ -6,91 +6,91 @@ import {
   Trash2,
   UserCheck,
   UserX,
-  Users
-} from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { adminApi, type UserData } from '../api'
-import { AdminLayout } from '../components/AdminLayout'
-import { Card } from '../components/ui/card'
+  Users,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { adminApi, type UserData } from "../api";
+import { AdminLayout } from "../components/AdminLayout";
+import { Card } from "../components/ui/card";
 
 export function AdminUsersPage() {
-  const [users, setUsers] = useState<UserData[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<
-    'all' | 'active' | 'inactive'
-  >('all')
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [userToDelete, setUserToDelete] = useState<UserData | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
+    "all" | "active" | "inactive"
+  >("all");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<UserData | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    loadUsers()
-  }, [])
+    loadUsers();
+  }, []);
 
   const loadUsers = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await adminApi.users.getAll(0, 100) // Carregar mais usuários
-      setUsers(response.content || [])
+      const response = await adminApi.users.getAll(0, 100); // Carregar mais usuários
+      setUsers(response.content || []);
     } catch (error) {
-      console.error('Erro ao carregar usuários:', error)
-      alert('Erro ao carregar lista de usuários')
+      console.error("Erro ao carregar usuários:", error);
+      alert("Erro ao carregar lista de usuários");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleToggleStatus = async (userId: number) => {
     try {
-      const updatedUser = await adminApi.users.toggleStatus(userId)
-      setUsers(users.map(user => (user.id === userId ? updatedUser : user)))
+      const updatedUser = await adminApi.users.toggleStatus(userId);
+      setUsers(users.map((user) => (user.id === userId ? updatedUser : user)));
     } catch (error) {
-      console.error('Erro ao atualizar status:', error)
-      alert('Erro ao atualizar status do usuário')
+      console.error("Erro ao atualizar status:", error);
+      alert("Erro ao atualizar status do usuário");
     }
-  }
+  };
 
   const handleDeleteClick = (user: UserData) => {
-    setUserToDelete(user)
-    setShowDeleteModal(true)
-  }
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
 
   const handleDeleteConfirm = async () => {
-    if (!userToDelete) return
+    if (!userToDelete) return;
 
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
-      await adminApi.users.delete(userToDelete.id)
-      setUsers(users.filter(u => u.id !== userToDelete.id))
-      setShowDeleteModal(false)
-      setUserToDelete(null)
+      await adminApi.users.delete(userToDelete.id);
+      setUsers(users.filter((u) => u.id !== userToDelete.id));
+      setShowDeleteModal(false);
+      setUserToDelete(null);
     } catch (error) {
-      console.error('Erro ao deletar usuário:', error)
-      alert('Erro ao deletar usuário')
+      console.error("Erro ao deletar usuário:", error);
+      alert("Erro ao deletar usuário");
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
-      statusFilter === 'all' ||
-      (statusFilter === 'active' && user.active) ||
-      (statusFilter === 'inactive' && !user.active)
+      statusFilter === "all" ||
+      (statusFilter === "active" && user.active) ||
+      (statusFilter === "inactive" && !user.active);
 
-    return matchesSearch && matchesStatus
-  })
+    return matchesSearch && matchesStatus;
+  });
 
   const stats = {
     total: users.length,
-    active: users.filter(u => u.active).length,
-    inactive: users.filter(u => !u.active).length
-  }
+    active: users.filter((u) => u.active).length,
+    inactive: users.filter((u) => !u.active).length,
+  };
 
   if (isLoading) {
     return (
@@ -99,7 +99,7 @@ export function AdminUsersPage() {
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       </AdminLayout>
-    )
+    );
   }
 
   return (
@@ -169,13 +169,13 @@ export function AdminUsersPage() {
                 type="text"
                 placeholder="Buscar por nome ou email..."
                 value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
             <select
               value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value as any)}
+              onChange={(e) => setStatusFilter(e.target.value as any)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             >
               <option value="all">Todos os Status</option>
@@ -222,7 +222,7 @@ export function AdminUsersPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredUsers.map(user => (
+                  filteredUsers.map((user) => (
                     <tr key={user.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -256,19 +256,25 @@ export function AdminUsersPage() {
                       <td className="px-6 py-4">
                         <p className="text-sm text-gray-600">
                           {new Date(user.dateCreation).toLocaleDateString(
-                            'pt-BR'
+                            "pt-BR"
                           )}
                         </p>
                       </td>
                       <td className="px-6 py-4">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            user.isAdmin
-                              ? 'bg-purple-100 text-purple-800'
-                              : 'bg-gray-100 text-gray-800'
+                            user.role === "ADMIN"
+                              ? "bg-purple-100 text-purple-800"
+                              : user.role === "PROVIDER"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {user.isAdmin ? 'Admin' : 'Usuário'}
+                          {user.role === "ADMIN"
+                            ? "Admin"
+                            : user.role === "PROVIDER"
+                            ? "Prestador"
+                            : "Usuário"}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -276,11 +282,11 @@ export function AdminUsersPage() {
                           onClick={() => handleToggleStatus(user.id)}
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${
                             user.active
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
                           }`}
                         >
-                          {user.active ? 'Ativo' : 'Inativo'}
+                          {user.active ? "Ativo" : "Inativo"}
                         </button>
                       </td>
                       <td className="px-6 py-4 text-right">
@@ -316,15 +322,15 @@ export function AdminUsersPage() {
           <Card className="w-full max-w-md p-6">
             <h3 className="text-xl font-bold mb-4">Confirmar Exclusão</h3>
             <p className="text-muted-foreground mb-6">
-              Tem certeza que deseja deletar o usuário{' '}
+              Tem certeza que deseja deletar o usuário{" "}
               <strong>{userToDelete.name}</strong>? Esta ação não pode ser
               desfeita.
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => {
-                  setShowDeleteModal(false)
-                  setUserToDelete(null)
+                  setShowDeleteModal(false);
+                  setUserToDelete(null);
                 }}
                 disabled={isDeleting}
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -344,5 +350,5 @@ export function AdminUsersPage() {
         </div>
       )}
     </AdminLayout>
-  )
+  );
 }

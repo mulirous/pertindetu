@@ -86,6 +86,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    public User becomeProvider(Long userId) {
+        User user = findById(userId);
+        if (user.getRole() == com.pertindetu.dev.models.enums.UserRole.ADMIN) {
+            throw new com.pertindetu.dev.exceptions.BadRequestException("Administradores não podem alterar sua role.");
+        }
+        user.setRole(com.pertindetu.dev.models.enums.UserRole.PROVIDER);
+        return userRepository.save(user);
+    }
+
     public long countTotalUsers() {
         return userRepository.count();
     }
