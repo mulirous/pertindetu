@@ -41,7 +41,7 @@ public class SecurityConfigurations {
                     req.requestMatchers(HttpMethod.POST, "/auth/register").permitAll();
 
                     // Libera Swagger
-                    req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
+                    req.requestMatchers("/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
 
                     // Endpoints de Administrador (Exige ROLE_ADMIN)
                     req.requestMatchers("/admin/**").hasRole("ADMIN");
